@@ -125,6 +125,34 @@ class RecipientController {
 			pages: Math.ceil(count / limit),
 		});
 	}
+
+	async delete(req, res) {
+		const schema = Yup.object().shape({
+			id: Yup.number().required(),
+		});
+		if (!(await schema.isValid(req.query))) {
+			return res
+				.status(400)
+				.json({ error: 'id must be an integer sent on query.' });
+		}
+
+		const user = await Recipients.destroy({
+			where: {
+				id: req.query.id,
+			},
+		});
+		if (user > 0) {
+			return res.status(200).json({
+				delete: `Recipient with id ${req.query.id} have been removed.`,
+			});
+		}
+		// Server side or client mistake?
+		const findRecipeint = await Recipients.findByPk(req.query.id);
+		if (findRecipeint) {
+			return res.status(500).json({ error: 'Unkown Error' });
+		}
+		return res.status(400).json({ error: 'Recipient id does not exist.' });
+	}
 }
 
 export default new RecipientController();
