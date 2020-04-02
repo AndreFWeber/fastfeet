@@ -61,6 +61,9 @@ class RecipientController {
 		}
 
 		const db_recipient = await Recipients.findByPk(req.body.id);
+		if (!db_recipient) {
+			return res.status(400).json({ error: 'Recipient id not found.' });
+		}
 
 		const {
 			id,
