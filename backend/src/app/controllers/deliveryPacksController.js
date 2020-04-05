@@ -4,6 +4,7 @@ import DeliveryPacks from '../models/DeliveryPacks';
 import File from '../models/File';
 import DeliveryPerson from '../models/DeliveryPerson';
 import Recipients from '../models/Recipients';
+import Mail from '../../lib/Mail';
 
 class DeliveryPackController {
 	async store(req, res) {
@@ -39,6 +40,24 @@ class DeliveryPackController {
 			deliveryperson_id,
 			product,
 		} = await DeliveryPacks.create(req.body);
+
+		await Mail.sendMail({
+			to: `${deliveryPerson.name} <${deliveryPerson.email}>`,
+			subject: `(#${id}) New package for collection`,
+			template: 'newPackage',
+			context: {
+				packageId: id,
+				deliveryPerson: deliveryPerson.name,
+				recipientName: recipient.recipient,
+				recipientStreet: recipient.street,
+				recipientNumber: recipient.number,
+				recipientComplement: recipient.complement,
+				recipientState: recipient.state,
+				recipientCity: recipient.city,
+				recipientPostcode: recipient.postcode,
+			},
+		});
+
 		return res.json({
 			id,
 			recipient_id,
@@ -114,7 +133,7 @@ class DeliveryPackController {
 				'00'
 			);
 			const beforeDate = afterDate;
-			beforeDate.setHours('23');
+			beforeDate.setHours('18');
 			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
 				return res.status(400).json({
 					error:
