@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
 import DeliveryPerson from '../models/DeliveryPerson';
+import DeliveryPacks from '../models/DeliveryPacks';
+import Recipients from '../models/Recipients';
 import File from '../models/File';
 
 class DeliveryPersonController {
@@ -156,6 +158,78 @@ class DeliveryPersonController {
 		return res
 			.status(400)
 			.json({ error: 'Delivery person id does not exist.' });
+	}
+
+	async open(req, res) {
+		const schema = Yup.object().shape({
+			id: Yup.number().required(),
+			offset: Yup.number().transform((originalValue) =>
+				originalValue <= 0 ? 1 : originalValue
+			),
+			limit: Yup.number().transform((originalValue) =>
+				originalValue <= 0 ? 20 : originalValue
+			),
+		});
+		const values = { ...req.params, ...req.query };
+		if (!(await schema.isValid(values))) {
+			return res.status(400).json({
+				error: 'Error on the request data structure.',
+			});
+		}
+
+		const { offset = 1, limit = 20 } = await schema.cast(req.query);
+
+		const deliveryPerson = await DeliveryPerson.findByPk(values.id);
+		if (!deliveryPerson) {
+			return res
+				.status(400)
+				.json({ error: 'Delivery person id not found.' });
+		}
+
+		const deliveryPack = await DeliveryPacks.findAll({
+			where: {
+				canceled_at: null,
+				end_date: null,
+			},
+			limit,
+			offset: (offset - 1) * limit,
+			attributes: [
+				'id',
+				'product',
+				'product',
+				'canceled_at',
+				'start_date',
+				'end_date',
+			],
+			include: [
+				{
+					model: File,
+					as: 'signature',
+					attributes: ['name', 'path', 'url'],
+				},
+				{
+					model: Recipients,
+					as: 'recipient',
+					attributes: [
+						'id',
+						'recipient',
+						'street',
+						'number',
+						'complement',
+						'state',
+						'city',
+						'postcode',
+					],
+				},
+			],
+			order: ['id'],
+		});
+
+		return res.json({
+			deliveryPack,
+			offset,
+			limit,
+		});
 	}
 }
 

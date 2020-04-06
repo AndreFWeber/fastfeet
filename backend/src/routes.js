@@ -15,6 +15,8 @@ const upload = multer(multerConfig);
 
 routes.post('/session', SessionController.store);
 
+routes.post('/deliveryperson/:id/deliveries', DeliveryPersonController.open);
+
 routes.use(AuthConfig); // JWT token verifier
 
 routes.post('/user', UserController.store);

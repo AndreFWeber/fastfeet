@@ -1,10 +1,11 @@
 import * as Yup from 'yup';
-import { getTime, isBefore, isAfter } from 'date-fns';
+import { isBefore, isAfter } from 'date-fns';
 import DeliveryPacks from '../models/DeliveryPacks';
 import File from '../models/File';
 import DeliveryPerson from '../models/DeliveryPerson';
 import Recipients from '../models/Recipients';
-import Mail from '../../lib/Mail';
+import NewPackageMail from '../jobs/NewPackageMail';
+import Queue from '../../lib/Queue';
 
 class DeliveryPackController {
 	async store(req, res) {
@@ -41,21 +42,10 @@ class DeliveryPackController {
 			product,
 		} = await DeliveryPacks.create(req.body);
 
-		await Mail.sendMail({
-			to: `${deliveryPerson.name} <${deliveryPerson.email}>`,
-			subject: `(#${id}) New package for collection`,
-			template: 'newPackage',
-			context: {
-				packageId: id,
-				deliveryPerson: deliveryPerson.name,
-				recipientName: recipient.recipient,
-				recipientStreet: recipient.street,
-				recipientNumber: recipient.number,
-				recipientComplement: recipient.complement,
-				recipientState: recipient.state,
-				recipientCity: recipient.city,
-				recipientPostcode: recipient.postcode,
-			},
+		await Queue.add(NewPackageMail.key, {
+			id,
+			deliveryPerson,
+			recipient,
 		});
 
 		return res.json({
