@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import DeliveryPerson from '../models/DeliveryPerson';
 import DeliveryPacks from '../models/DeliveryPacks';
 import Recipients from '../models/Recipients';
@@ -160,9 +161,10 @@ class DeliveryPersonController {
 			.json({ error: 'Delivery person id does not exist.' });
 	}
 
-	async open(req, res) {
+	async deliveries(req, res) {
 		const schema = Yup.object().shape({
 			id: Yup.number().required(),
+			delivered: Yup.boolean().required(),
 			offset: Yup.number().transform((originalValue) =>
 				originalValue <= 0 ? 1 : originalValue
 			),
@@ -177,7 +179,9 @@ class DeliveryPersonController {
 			});
 		}
 
-		const { offset = 1, limit = 20 } = await schema.cast(req.query);
+		const { offset = 1, limit = 20, delivered = false } = await schema.cast(
+			req.query
+		);
 
 		const deliveryPerson = await DeliveryPerson.findByPk(values.id);
 		if (!deliveryPerson) {
@@ -187,10 +191,17 @@ class DeliveryPersonController {
 		}
 
 		const deliveryPack = await DeliveryPacks.findAll({
-			where: {
-				canceled_at: null,
-				end_date: null,
-			},
+			where: delivered
+				? {
+						canceled_at: null,
+						end_date: {
+							[Op.ne]: null,
+						},
+				  }
+				: {
+						canceled_at: null,
+						end_date: null,
+				  },
 			limit,
 			offset: (offset - 1) * limit,
 			attributes: [

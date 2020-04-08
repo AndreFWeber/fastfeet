@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
-import { isBefore, isAfter } from 'date-fns';
+import { isBefore, isAfter, parseISO, startOfDay, endOfDay } from 'date-fns';
+import { Op } from 'sequelize';
 import DeliveryPacks from '../models/DeliveryPacks';
 import File from '../models/File';
 import DeliveryPerson from '../models/DeliveryPerson';
@@ -82,6 +83,30 @@ class DeliveryPackController {
 			end_date: endDate,
 		} = req.body;
 
+		/* Project option: The front end should send the date
+		 *  It allows the offline start date, end date and cancellation.
+		 */
+		if (startDate) {
+			const today = new Date(startDate);
+			const afterDate = new Date(
+				today.getFullYear(),
+				today.getMonth(),
+				today.getDate(),
+				'00',
+				'00',
+				'00',
+				'00'
+			);
+			const beforeDate = afterDate;
+			beforeDate.setHours('23'); /* !FIXME  */
+			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
+				return res.status(400).json({
+					error:
+						'Package collection must occur between 08:00 and 18:00h.',
+				});
+			}
+		}
+
 		if (recipientId) {
 			const recipient = await Recipients.findByPk(recipientId);
 			if (!recipient) {
@@ -100,35 +125,13 @@ class DeliveryPackController {
 					.json({ error: 'Delivery person id not found.' });
 			}
 		}
+
 		if (signatureId) {
 			const signature = await File.findByPk(signatureId);
 			if (!signature) {
 				return res
 					.status(400)
 					.json({ error: 'Signature id not found.' });
-			}
-		}
-		/* Project option: The front end should send the date
-		 *  It allows the offline start date, end date and cancellation.
-		 */
-		if (startDate) {
-			const today = new Date(startDate);
-			const afterDate = new Date(
-				today.getFullYear(),
-				today.getMonth(),
-				today.getDate(),
-				'00',
-				'00',
-				'00',
-				'00'
-			);
-			const beforeDate = afterDate;
-			beforeDate.setHours('18');
-			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
-				return res.status(400).json({
-					error:
-						'Package collection must occur between 08:00 and 18:00h.',
-				});
 			}
 		}
 
@@ -139,13 +142,18 @@ class DeliveryPackController {
 
 		if (endDate) {
 			/* if the delivery person hasnt collected it yet... */
-			if (!pack.startDate && !startDate) {
+			if (!pack.start_date && !startDate) {
 				return res.status(400).json({
 					error: 'Start date have not been informed.',
 				});
 			}
 
-			if (isBefore(endDate, startDate || pack.startDate)) {
+			if (
+				isBefore(
+					parseISO(endDate),
+					parseISO(startDate) || parseISO(pack.start_date)
+				)
+			) {
 				return res.status(400).json({
 					error: 'Start date must come before end date.',
 				});
@@ -273,6 +281,150 @@ class DeliveryPackController {
 			return res.status(500).json({ error: 'Unkown Error' });
 		}
 		return res.status(400).json({ error: 'Package id does not exist.' });
+	}
+
+	async status(req, res) {
+		const schema = Yup.object().shape({
+			package_id: Yup.number().required(),
+			deliveryperson_id: Yup.number(),
+			start_date: Yup.date(),
+			end_date: Yup.date(),
+			signature_id: Yup.number().when('end_date', (end_date, field) =>
+				!end_date ? field : field.required()
+			),
+		});
+
+		const values = { ...req.body };
+		if (!(await schema.isValid(values))) {
+			return res.status(400).json({
+				error: 'The fields parsed are not correct.',
+			});
+		}
+
+		const {
+			package_id: packageId,
+			deliveryperson_id: deliverypersonId,
+			signature_id: signatureId,
+			start_date: startDate,
+			end_date: endDate,
+		} = req.body;
+		let collectedPackages = 0;
+
+		const pack = await DeliveryPacks.findByPk(packageId);
+		if (!pack) {
+			return res.status(400).json({ error: 'Package id not found.' });
+		}
+		if (startDate) {
+			if (pack.start_date) {
+				return res.status(400).json({
+					error: 'Package has already been collected.',
+				});
+			}
+
+			const today = new Date(startDate);
+			const afterDate = new Date(
+				today.getFullYear(),
+				today.getMonth(),
+				today.getDate(),
+				'00',
+				'00',
+				'00',
+				'00'
+			);
+			const beforeDate = afterDate;
+			beforeDate.setHours('23'); /*! FIXME */
+			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
+				return res.status(400).json({
+					error:
+						'Package collection must occur between 08:00 and 18:00h.',
+				});
+			}
+			console.log(new Date(startDate));
+			/* Check if the person has already collected 5 packages */
+			collectedPackages = await DeliveryPacks.count({
+				where: {
+					deliveryperson_id: deliverypersonId,
+					start_date: {
+						[Op.between]: [startOfDay(today), endOfDay(today)],
+					},
+				},
+			});
+			if (collectedPackages >= 5) {
+				return res.status(400).json({
+					error:
+						'A delivery person may take out at most 5 packages a day.',
+				});
+			}
+			console.log('COUNT TODAY ', collectedPackages);
+		}
+
+		if (deliverypersonId) {
+			const deliveryPerson = await DeliveryPerson.findByPk(
+				deliverypersonId
+			);
+			if (!deliveryPerson) {
+				return res
+					.status(400)
+					.json({ error: 'Delivery person id not found.' });
+			}
+		}
+
+		if (endDate) {
+			if (pack.end_date) {
+				return res.status(400).json({
+					error: 'Package has already been delivered.',
+				});
+			}
+			/* if the delivery person hasnt collected it yet... */
+			if (!pack.start_date && !startDate) {
+				return res.status(400).json({
+					error: 'Start date have not been informed.',
+				});
+			}
+
+			if (
+				isBefore(
+					parseISO(endDate),
+					parseISO(startDate) || parseISO(pack.start_date)
+				)
+			) {
+				return res.status(400).json({
+					error: 'Start date must come before end date.',
+				});
+			}
+		}
+
+		if (signatureId) {
+			const signature = await File.findByPk(signatureId);
+			if (!signature) {
+				return res
+					.status(400)
+					.json({ error: 'Signature id not found.' });
+			}
+		}
+
+		const {
+			id,
+			product,
+			recipient_id,
+			deliveryperson_id,
+			signature_id,
+			canceled_at,
+			start_date,
+			end_date,
+		} = await pack.update(values);
+
+		return res.json({
+			id,
+			product,
+			recipient_id,
+			deliveryperson_id,
+			signature_id,
+			canceled_at,
+			start_date,
+			end_date,
+			collectedPackages: collectedPackages + 1,
+		});
 	}
 }
 
