@@ -9,6 +9,7 @@ import RecipientController from './app/controllers/recipientController';
 import FileController from './app/controllers/fileController';
 import DeliveryPersonController from './app/controllers/deliveryPersonController';
 import DeliveryPacksController from './app/controllers/deliveryPacksController';
+import DeliveryProblemsController from './app/controllers/deliveryProblemsController';
 
 const routes = new Router();
 const upload = multer(multerConfig);
@@ -22,6 +23,8 @@ routes.get(
 );
 // Start and End deliveries
 routes.post('/deliverypackage/deliveries', DeliveryPacksController.status);
+// Report a problem
+routes.post('/deliverypackage/:id/problems', DeliveryProblemsController.store);
 
 routes.use(AuthConfig); // JWT token verifier
 
@@ -46,4 +49,15 @@ routes.post('/deliverypackage', DeliveryPacksController.store);
 routes.get('/deliverypackage', DeliveryPacksController.index);
 routes.put('/deliverypackage', DeliveryPacksController.update);
 routes.delete('/deliverypackage', DeliveryPacksController.delete);
+
+routes.get('/deliverypackage/problems', DeliveryProblemsController.index);
+routes.get(
+	'/deliverypackage/:id/problems',
+	DeliveryProblemsController.indexOne
+);
+routes.delete(
+	'/deliverypackage/:id/cancel-delivery',
+	DeliveryProblemsController.delete
+);
+
 export default routes;

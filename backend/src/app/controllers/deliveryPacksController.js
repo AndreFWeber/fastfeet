@@ -151,7 +151,7 @@ class DeliveryPackController {
 			if (
 				isBefore(
 					parseISO(endDate),
-					parseISO(startDate) || parseISO(pack.start_date)
+					startDate ? parseISO(startDate) : pack.start_date
 				)
 			) {
 				return res.status(400).json({
@@ -264,7 +264,6 @@ class DeliveryPackController {
 				.status(400)
 				.json({ error: 'id must be an integer sent on query.' });
 		}
-
 		const deliveryPack = await DeliveryPacks.destroy({
 			where: {
 				id: req.query.id,
@@ -293,13 +292,13 @@ class DeliveryPackController {
 				!end_date ? field : field.required()
 			),
 		});
-
-		const values = { ...req.body };
-		if (!(await schema.isValid(values))) {
+		if (!(await schema.isValid(req.body))) {
 			return res.status(400).json({
 				error: 'The fields parsed are not correct.',
 			});
 		}
+		// Delivery person should not update any other field than these...
+		const values = schema.cast(req.body, { stripUnknown: true });
 
 		const {
 			package_id: packageId,
@@ -314,6 +313,12 @@ class DeliveryPackController {
 		if (!pack) {
 			return res.status(400).json({ error: 'Package id not found.' });
 		}
+		if (pack.canceled_at) {
+			return res.status(400).json({
+				error: 'Package has been canceled.',
+			});
+		}
+
 		if (startDate) {
 			if (pack.start_date) {
 				return res.status(400).json({
@@ -339,7 +344,6 @@ class DeliveryPackController {
 						'Package collection must occur between 08:00 and 18:00h.',
 				});
 			}
-			console.log(new Date(startDate));
 			/* Check if the person has already collected 5 packages */
 			collectedPackages = await DeliveryPacks.count({
 				where: {
@@ -355,7 +359,6 @@ class DeliveryPackController {
 						'A delivery person may take out at most 5 packages a day.',
 				});
 			}
-			console.log('COUNT TODAY ', collectedPackages);
 		}
 
 		if (deliverypersonId) {
@@ -385,7 +388,7 @@ class DeliveryPackController {
 			if (
 				isBefore(
 					parseISO(endDate),
-					parseISO(startDate) || parseISO(pack.start_date)
+					startDate ? parseISO(startDate) : pack.start_date
 				)
 			) {
 				return res.status(400).json({
