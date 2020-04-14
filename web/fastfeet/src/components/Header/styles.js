@@ -35,7 +35,10 @@ export const Content = styled.div`
 export const LinkContainer = styled.div`
 	a {
 		font-weight: bold;
-		color: ${(props) => (props.linkActive ? '#333' : '#999')} !important;
+		color: ${(props) =>
+			props.linkActive
+				? 'rgb(78, 78, 78)'
+				: 'rgb(150, 150, 150)'} !important;
 		margin-right: 50px;
 	}
 `;

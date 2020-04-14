@@ -20,7 +20,7 @@ export const Button = styled.button`
 	margin: 5px;
 	height: 34px;
 	width: 100px;
-	background: ${(props) => (props.save ? '#7159c1' : '#cdcdcd')} !important;
+	background: ${(props) => (props.save ? '#7159c1' : '#cdcdcd')};
 	font-weight: bold;
 	color: #fff;
 	border: 0;
@@ -61,7 +61,7 @@ export const Content = styled.div`
 	label {
 		text-align: left;
 		font-weight: bold;
-		color: #333;
+		color: rgb(78, 78, 78);
 	}
 
 	input {
@@ -70,13 +70,13 @@ export const Content = styled.div`
 		border-radius: 4px;
 		height: 44px;
 		padding: 0 15px;
-		color: #333;
+		color: rgb(78, 78, 78);
 		margin: 0 0 10px;
-		border: 1px solid #cdcdcd;
+		border: 1px solid rgb(150, 150, 150);
 		margin-top: 10px;
 
 		&::placeholder {
-			color: #999;
+			color: rgb(150, 150, 150);
 		}
 	}
 

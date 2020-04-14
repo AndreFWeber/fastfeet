@@ -29,7 +29,7 @@ export const Content = styled.div`
 		label {
 			text-align: left;
 			font-weight: bold;
-			color: #333;
+			color: rgb(78, 78, 78);
 		}
 
 		input {
@@ -43,7 +43,7 @@ export const Content = styled.div`
 			margin: 0 0 10px;
 
 			&::placeholder {
-				color: #999;
+				color: rgb(150, 150, 150);
 			}
 		}
 
