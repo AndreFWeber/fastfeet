@@ -6,8 +6,9 @@ import Packages from '../pages/Packages';
 import DeliveryPerson from '../pages/DeliveryPerson';
 import Recipients from '../pages/Recipients';
 import Problems from '../pages/Problems';
-import DeliveryPersonEdition from '../pages/DeliveryPersonEdition'
-;
+import DeliveryPersonEdition from '../pages/DeliveryPersonEdition';
+import PackageStore from '../pages/Packages/PackageStore';
+
 export default function Routes() {
 	return (
 		<Switch>
@@ -24,6 +25,11 @@ export default function Routes() {
 				path="/new-deliveryperson"
 				isPrivate
 				component={DeliveryPersonEdition}
+			/>
+			<Route
+				path="/new-deliverypackage"
+				isPrivate
+				component={PackageStore}
 			/>
 		</Switch>
 	);

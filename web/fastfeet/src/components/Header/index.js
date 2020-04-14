@@ -23,7 +23,12 @@ export default function Header() {
 			<Content>
 				<nav active>
 					<img src={logo} alt="FastFeet" />
-					<LinkContainer linkActive={active === '/packages'}>
+					<LinkContainer
+						linkActive={
+							active === '/packages' ||
+							active === '/new-deliverypackage'
+						}
+					>
 						<Link to="/packages">Encomendas</Link>
 					</LinkContainer>
 
