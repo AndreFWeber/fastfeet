@@ -23,7 +23,12 @@ export default function OptionsButtons({ icon, title, cb }) {
 			<OpList visible={visible}>
 				{title.map((t, index) => (
 					<>
-						<Option onClick={cb[index]}>
+						<Option
+							onClick={() => {
+								cb[index]();
+								setVisible(!visible);
+							}}
+						>
 							{icon[index]}
 							{title[index]}
 						</Option>

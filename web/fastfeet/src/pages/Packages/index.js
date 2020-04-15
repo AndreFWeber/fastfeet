@@ -71,8 +71,30 @@ export default function Packages() {
 	function handleViewButton(pack) {
 		console.tron.log('handleViewButton', pack);
 	}
-	function handleCancelPackageButton(pack) {
+
+	async function handleCancelPackageButton(pack) {
 		console.tron.log('handleCancelPackageButton', pack);
+		try {
+			const response = await api
+				.delete(`/deliverypackage/${pack.id}/cancel-delivery`)
+				.catch((error) => {
+					toast.error('Não foi possível cancelar a encomenda.');
+					console.tron.log(
+						'@Packages/handleCancelPackageButton Error',
+						error
+					);
+				});
+			if (response.status === 200) {
+				toast.success('Encomenda cancelada com sucesso.');
+			}
+		} catch (error) {
+			console.tron.log(
+				'@Packages/handleCancelPackageButton Error',
+				error
+			);
+		}
+
+		// '
 	}
 	return (
 		<Container>
