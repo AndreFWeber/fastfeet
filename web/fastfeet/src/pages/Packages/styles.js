@@ -115,10 +115,11 @@ export const Td = styled.td`
 			width: 40px;
 			border-radius: 50%;
 			border: 3px solid rgba(255, 255, 255, 0.3);
-			--rand-color: ${`rgb(${Math.floor(Math.random() * 255) + 1},${
-				Math.floor(Math.random() * 255) + 1
-			}, ${Math.floor(Math.random() * 255) + 1}, 0.2)`};
-			background: var(--rand-color);
+			--bg-color: ${(props) =>
+				`rgb(${props.r},${props.g}, ${props.b}, 0.2)`};
+			--color: ${(props) => `rgb(${props.r},${props.g}, ${props.b}, 1)`};
+			background: var(--bg-color);
+			color: var(--color);
 		}
 	}
 `;

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { darken } from 'polished';
+import selectArrow from '../../../assets/selectArrow.svg';
 
 export const Container = styled.div`
 	display: flex;
@@ -58,9 +59,9 @@ export const Content = styled.div`
 		border-radius: 4px;
 		height: 44px;
 		padding: 0 15px;
-		color: rgb(78, 78, 78);
+		color: rgb(150, 150, 150);
 		margin: 0 0 10px;
-		border: 1px solid rgb(150, 150, 150);
+		border: 1px solid rgb(150, 150, 150, 0.5);
 		margin-top: 10px;
 
 		&::placeholder {
@@ -76,7 +77,31 @@ export const Content = styled.div`
 	}
 `;
 
-export const Select = styled.select`
-	border: 1px solid rgb(150, 150, 150);
-	background: transparent;
+export const SelectContainer = styled.div`
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+`;
+
+export const Select = styled.div`
+	margin-bottom: 15px;
+	width: 49%;
+	text-align: left;
+	color: rgb(78, 78, 78);
+
+	select {
+		width: 100%;
+		border-radius: 4px;
+		position: relative;
+		border: 1px solid rgb(150, 150, 150, 0.5);
+		color: rgb(150, 150, 150);
+		font-size: 16px;
+		padding: 10px 26px 10px 12px;
+		-moz-appearance: none; /* Firefox */
+		-webkit-appearance: none; /* Safari and Chrome */
+		appearance: none;
+		background: url(${selectArrow}) no-repeat right #fff;
+		background-position: 100% 50%;
+		background-size: 6% auto;
+	}
 `;

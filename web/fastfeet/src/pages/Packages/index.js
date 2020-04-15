@@ -32,7 +32,7 @@ export default function Packages() {
 							'@Packages/loadPackages ',
 							error.response.data.error
 						);
-						toast.error('Não foi possível cadastrar o usuário.');
+						toast.error('Não foi possível buscar as encomendas.');
 					});
 
 				if (response.status === 200) {
@@ -121,7 +121,11 @@ export default function Packages() {
 									#{pack.id < 10 ? `0${pack.id}` : pack.id}
 								</Td>
 								<Td>{pack.recipient.recipient}</Td>
-								<Td>
+								<Td
+									r={Math.floor(Math.random() * 255) + 1}
+									g={Math.floor(Math.random() * 255) + 1}
+									b={Math.floor(Math.random() * 255) + 1}
+								>
 									<div>
 										{pack.deliveryperson.avatar ? (
 											<img

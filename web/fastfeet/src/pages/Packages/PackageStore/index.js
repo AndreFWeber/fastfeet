@@ -1,60 +1,97 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@rocketseat/unform';
 import { toast } from 'react-toastify';
-import { Select, InputLabel } from '@material-ui/core';
-import { Container, Wrapper, Content } from './styles';
+import { Container, Wrapper, Content, Select, SelectContainer } from './styles';
 import ContentHeader from '../../../components/ContentHeader';
 import history from '../../../services/history';
 import api from '../../../services/api';
 
 export default function PackageStore() {
-	const [fileId, setFileId] = useState(-1);
-	const [name, setName] = useState('');
-	const [email, setEmail] = useState('');
-	const [recipient, setRecipient] = React.useState('');
-
-	const handleChange = (event) => {
-		setRecipient(event.target.recipient);
-	};
+	const [recipients, setRecipients] = useState([]);
+	const [deliveryPeople, setDeliveryPeople] = useState([]);
+	const [pack, setPack] = useState({
+		recipient_id: -1,
+		deliveryperson_id: -1,
+		product: '',
+	});
 
 	async function handleSave() {
-		if (name === '' || email === '') {
-			toast.error('Os campos de nome e e-email são obrigatórios.');
+		console.tron.log(' SAVE ', pack);
+		if (pack.product === '') {
+			toast.error('Todos os campos são obrigatórios.');
 			return;
 		}
-		const data = {
-			name,
-			email,
-		};
-		if (fileId >= 0) data.avatar_id = fileId;
-
 		try {
 			const response = await api
-				.post('deliveryperson', data)
+				.post('/deliverypackage', {
+					...pack,
+				})
 				.catch((error) => {
-					if (
-						error.response.data.error.indexOf(
-							'email already exists'
-						)
-					) {
-						toast.error('Email já está cadastrado.');
-					} else {
-						toast.error('Não foi possível cadastrar o usuário.');
-					}
+					toast.error('Não foi possível cadastrar o usuário.');
+					console.tron.log('@PackageStore/handleSave Error', error);
 				});
-
 			if (response.status === 200) {
-				toast.success('Usuário cadastrado com sucesso.');
+				toast.success('Encomenda cadastrada com sucesso.');
 			}
 		} catch (error) {
-			console.tron.log('@DeliveryPersonEdition/handleSave Error', error);
+			console.tron.log('@PackageStore/handleSave Error', error);
 		}
 	}
 
 	function handleReturn() {
 		history.push('/packages');
 	}
+
+	useEffect(() => {
+		async function loadRecipients() {
+			try {
+				const response = await api.get('recipient').catch((error) => {
+					toast.error('Não foi buscar os destinatários cadastrados.');
+				});
+				if (response.status === 200) {
+					if (response.data.recipients.length) {
+						setRecipients(response.data.recipients);
+						setPack((p) => {
+							return {
+								...p,
+								recipient_id: response.data.recipients[0].id,
+							};
+						});
+					}
+				}
+			} catch (error) {
+				console.tron.log('@PackageStore/handleSave Error', error);
+			}
+		}
+		async function loadDeliveryPeople() {
+			try {
+				const response = await api
+					.get('deliveryperson')
+					.catch((error) => {
+						toast.error(
+							'Não foi buscar os entregadores cadastrados.'
+						);
+					});
+				if (response.status === 200) {
+					if (response.data.deliveryPerson.length) {
+						setDeliveryPeople(response.data.deliveryPerson);
+						setPack((p) => {
+							return {
+								...p,
+								deliveryperson_id:
+									response.data.deliveryPerson[0].id,
+							};
+						});
+					}
+				}
+			} catch (error) {
+				console.tron.log('@loadDeliveryPeople/handleSave Error', error);
+			}
+		}
+		loadRecipients();
+		loadDeliveryPeople();
+	}, []);
 
 	return (
 		<Container>
@@ -65,37 +102,74 @@ export default function PackageStore() {
 					saveCb={handleSave}
 				/>
 				<Content>
-					<InputLabel htmlFor="outlined-age-native-simple">
-						Age
-					</InputLabel>
-					<Select
-						native
-						value={recipient}
-						onChange={handleChange}
-						label="Age"
-						inputProps={{
-							name: 'age',
-							id: 'outlined-age-native-simple',
-						}}
-					>
-						<option aria-label="None" value="" />
-						<option value={10}>Ten</option>
-						<option value={20}>Twenty</option>
-						<option value={30}>Thirty</option>
-					</Select>
-
-					<label htmlFor="name">
-						Nome
+					<SelectContainer>
+						<Select>
+							<label htmlFor="">
+								Destinatário
+								<select
+									id="recipients"
+									onChange={(e) => {
+										setPack({
+											...pack,
+											recipient_id: e.target.value,
+										});
+									}}
+								>
+									{recipients &&
+										recipients.map((recipient) => (
+											<option
+												value={recipient.id}
+												key={recipient.id}
+											>
+												{recipient.recipient}
+											</option>
+										))}
+								</select>
+							</label>
+						</Select>
+						<Select>
+							<label htmlFor="">
+								Entregador
+								<select
+									id="deliveryPerson"
+									onChange={(e) => {
+										console.tron.log(
+											'CHANGE ',
+											e.target.value
+										);
+										setPack({
+											...pack,
+											deliveryperson_id: e.target.value,
+										});
+									}}
+								>
+									{deliveryPeople &&
+										deliveryPeople.map((deliveryPerson) => (
+											<option
+												value={deliveryPerson.id}
+												key={deliveryPerson.id}
+											>
+												{`${deliveryPerson.name} (${deliveryPerson.email})`}
+											</option>
+										))}
+								</select>
+							</label>
+						</Select>
+					</SelectContainer>
+					<label htmlFor="product">
+						Nome do produto
 						<Input
-							id="name"
-							name="name"
-							type="name"
-							value={name}
+							id="product"
+							name="product"
+							type="product"
+							value={pack.product}
 							onChange={(e) => {
-								setName(e.target.value);
+								setPack({
+									...pack,
+									product: e.target.value,
+								});
 							}}
-							placeholder="Nome do entregador"
-							accept="image/*"
+							placeholder="Nome do produto"
 						/>
 					</label>
 				</Content>

@@ -23,7 +23,8 @@ export const Button = styled.button`
 	transition: background 0.2s;
 
 	&:hover {
-		background: ${darken(0.06, '#cdcdcd')};
+		background: ${(props) =>
+			darken(0.06, props.save ? '#7159c1' : '#cdcdcd')};
 	}
 `;
 
@@ -33,6 +34,7 @@ export const Header = styled.div`
 	justify-content: space-between;
 	align-items: center;
 	margin: 30px 0px 20px 0px;
+	color: rgb(78, 78, 78);
 
 	div {
 		display: flex;
