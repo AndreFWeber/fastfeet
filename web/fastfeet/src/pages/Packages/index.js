@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { MdMoreHoriz, MdAdd, MdSearch } from 'react-icons/md';
+import { MdAdd, MdSearch, MdDelete, MdCreate } from 'react-icons/md';
 import history from '../../services/history';
-
+import OptionsButtons from '../../components/OptionsButtons';
 import api from '../../services/api';
 import {
 	Container,
@@ -14,6 +14,7 @@ import {
 	Th,
 	Tr,
 	Td,
+	AvatarContainer,
 	Status,
 } from './styles';
 
@@ -67,6 +68,12 @@ export default function Packages() {
 		history.push('/new-deliverypackage');
 	}
 
+	function handleViewButton(pack) {
+		console.tron.log('handleViewButton', pack);
+	}
+	function handleCancelPackageButton(pack) {
+		console.tron.log('handleCancelPackageButton', pack);
+	}
 	return (
 		<Container>
 			<Header>
@@ -126,7 +133,7 @@ export default function Packages() {
 									g={Math.floor(Math.random() * 255) + 1}
 									b={Math.floor(Math.random() * 255) + 1}
 								>
-									<div>
+									<AvatarContainer>
 										{pack.deliveryperson.avatar ? (
 											<img
 												src={
@@ -145,7 +152,7 @@ export default function Packages() {
 											</div>
 										)}
 										{pack.deliveryperson.name}
-									</div>
+									</AvatarContainer>
 								</Td>
 								<Td>{pack.recipient.city}</Td>
 								<Td>{pack.recipient.state}</Td>
@@ -155,9 +162,31 @@ export default function Packages() {
 									</Status>
 								</Td>
 								<Td>
-									<MdMoreHoriz
-										size={22}
-										color="rgb(150, 150, 150)"
+									<OptionsButtons
+										icon={[
+											<MdCreate
+												color="blue"
+												size={15}
+												style={{ margin: 10 }}
+											/>,
+											<MdDelete
+												color="red"
+												size={15}
+												style={{ margin: 10 }}
+											/>,
+										]}
+										title={[
+											'Visualizar',
+											'Cancelar Encomenda',
+										]}
+										cb={[
+											() => {
+												handleViewButton(pack);
+											},
+											() => {
+												handleCancelPackageButton(pack);
+											},
+										]}
 									/>
 								</Td>
 							</Tr>

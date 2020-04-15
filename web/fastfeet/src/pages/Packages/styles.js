@@ -86,42 +86,41 @@ export const Tr = styled.tr`
 	height: 50px;
 `;
 
+export const AvatarContainer = styled.td`
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+
+	img {
+		margin-right: 5px;
+		height: 40px;
+		width: 40px;
+		border-radius: 50%;
+		border: 3px solid rgba(255, 255, 255, 0.3);
+		background: #eee;
+	}
+
+	div {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 5px;
+		height: 40px;
+		width: 40px;
+		border-radius: 50%;
+		border: 3px solid rgba(255, 255, 255, 0.3);
+		--bg-color: ${(props) => `rgb(${props.r},${props.g}, ${props.b}, 0.2)`};
+		--color: ${(props) => `rgb(${props.r},${props.g}, ${props.b}, 1)`};
+		background: var(--bg-color);
+		color: var(--color);
+	}
+`;
+
 export const Td = styled.td`
 	text-align: left;
 	border: none;
 	color: rgb(150, 150, 150);
 	padding: 10px;
-
-	div {
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-
-		img {
-			margin-right: 5px;
-			height: 40px;
-			width: 40px;
-			border-radius: 50%;
-			border: 3px solid rgba(255, 255, 255, 0.3);
-			background: #eee;
-		}
-
-		div {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 5px;
-			height: 40px;
-			width: 40px;
-			border-radius: 50%;
-			border: 3px solid rgba(255, 255, 255, 0.3);
-			--bg-color: ${(props) =>
-				`rgb(${props.r},${props.g}, ${props.b}, 0.2)`};
-			--color: ${(props) => `rgb(${props.r},${props.g}, ${props.b}, 1)`};
-			background: var(--bg-color);
-			color: var(--color);
-		}
-	}
 `;
 
 export const Status = styled.div`
