@@ -1,13 +1,14 @@
 /* eslint-disable no-nested-ternary */
 import styled from 'styled-components';
-import { darken } from 'polished';
+import { darken, lighten } from 'polished';
 
 export const Container = styled.div`
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding-top: 30px;
+	padding: 30px 0;
+	background: #f5f5f5;
 `;
 
 export const Header = styled.div`
@@ -90,6 +91,10 @@ export const AvatarContainer = styled.td`
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
+	text-align: left;
+	border: none;
+	color: rgb(150, 150, 150);
+	padding: 10px;
 
 	img {
 		margin-right: 5px;
@@ -168,5 +173,47 @@ export const Status = styled.div`
 				? 'rgb(85, 127, 238)'
 				: 'rgb(191, 189, 54)'};
 		border-radius: 50%;
+	}
+`;
+
+export const Hr = styled.hr`
+	width: 90%;
+	margin: 10px 5%;
+	border: 0.5px solid ${lighten(0.3, '#999')};
+`;
+
+export const ViewModal = styled.div`
+	width: 50%;
+	padding: 30px;
+	background-color: #fff;
+	border-radius: 4px;
+
+	strong {
+		text-align: left;
+		border: none;
+		color: rgb(78, 78, 78);
+	}
+
+	p {
+		margin: 5px 0px;
+		color: rgb(150, 150, 150);
+	}
+`;
+
+export const Dates = styled.div`
+	display: flex;
+`;
+export const Pbold = styled.p`
+	font-weight: bold;
+	color: ${darken(0.3, 'rgb(150, 150, 150)')};
+	margin-right: 5px !important;
+`;
+
+export const Signature = styled.div`
+	display: flex;
+	flex-direction: column;
+	img {
+		margin: 5px 0px;
+		width: 100%;
 	}
 `;

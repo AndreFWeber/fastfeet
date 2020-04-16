@@ -10,7 +10,6 @@ export default function ContentHeader({ title, returnCb, saveCb }) {
 				<h1>{title}</h1>
 				<div>
 					<Button
-						type="button"
 						onClick={() => {
 							returnCb();
 						}}
@@ -23,7 +22,6 @@ export default function ContentHeader({ title, returnCb, saveCb }) {
 						Voltar
 					</Button>
 					<Button
-						type="button"
 						save
 						onClick={() => {
 							saveCb();

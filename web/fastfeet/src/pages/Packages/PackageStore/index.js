@@ -2,12 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '@rocketseat/unform';
 import { toast } from 'react-toastify';
-import { Container, Wrapper, Content, Select, SelectContainer } from './styles';
+import {
+	Container,
+	Wrapper,
+	Content,
+	Select,
+	SelectContainer,
+	SelectList,
+} from './styles';
 import ContentHeader from '../../../components/ContentHeader';
 import history from '../../../services/history';
 import api from '../../../services/api';
 
-export default function PackageStore() {
+export default function PackageStore({ location }) {
 	const [recipients, setRecipients] = useState([]);
 	const [deliveryPeople, setDeliveryPeople] = useState([]);
 	const [pack, setPack] = useState({
@@ -17,7 +24,6 @@ export default function PackageStore() {
 	});
 
 	async function handleSave() {
-		console.tron.log(' SAVE ', pack);
 		if (pack.product === '') {
 			toast.error('Todos os campos são obrigatórios.');
 			return;
@@ -39,6 +45,30 @@ export default function PackageStore() {
 		}
 	}
 
+	async function handleUpdate() {
+		if (pack.product === '') {
+			toast.error('Todos os campos são obrigatórios.');
+			return;
+		}
+		try {
+			const data = {
+				...pack,
+				package_id: location.state.editPack.id,
+			};
+			const response = await api
+				.put('/deliverypackage', data)
+				.catch((error) => {
+					toast.error('Não foi possível editar o usuário.');
+					console.tron.log('@PackageStore/handleUpdate Error', error);
+				});
+			if (response.status === 200) {
+				toast.success('Encomenda cadastrada com sucesso.');
+			}
+		} catch (error) {
+			console.tron.log('@PackageStore/handleUpdate Error', error);
+		}
+	}
+
 	function handleReturn() {
 		history.push('/packages');
 	}
@@ -55,7 +85,10 @@ export default function PackageStore() {
 						setPack((p) => {
 							return {
 								...p,
-								recipient_id: response.data.recipients[0].id,
+								recipient_id:
+									(location.state.editPack &&
+										location.state.editPack.recipient.id) ||
+									response.data.recipients[0].id,
 							};
 						});
 					}
@@ -80,6 +113,9 @@ export default function PackageStore() {
 							return {
 								...p,
 								deliveryperson_id:
+									(location.state.editPack &&
+										location.state.editPack.deliveryperson
+											.id) ||
 									response.data.deliveryPerson[0].id,
 							};
 						});
@@ -91,22 +127,35 @@ export default function PackageStore() {
 		}
 		loadRecipients();
 		loadDeliveryPeople();
+		if (location.state.editPack) {
+			setPack({
+				...pack,
+				product: location.state.editPack.product,
+			});
+		}
 	}, []);
 
 	return (
 		<Container>
 			<Wrapper>
 				<ContentHeader
-					title="Cadastro de encomendas"
+					title={location.state.title}
 					returnCb={handleReturn}
-					saveCb={handleSave}
+					saveCb={() => {
+						if (location.state.editPack) {
+							handleUpdate();
+						} else {
+							handleSave();
+						}
+					}}
 				/>
 				<Content>
 					<SelectContainer>
 						<Select>
 							<label htmlFor="">
 								Destinatário
-								<select
+								<SelectList
+									value={pack.recipient_id}
 									id="recipients"
 									onChange={(e) => {
 										setPack({
@@ -124,13 +173,14 @@ export default function PackageStore() {
 												{recipient.recipient}
 											</option>
 										))}
-								</select>
+								</SelectList>
 							</label>
 						</Select>
 						<Select>
 							<label htmlFor="">
 								Entregador
-								<select
+								<SelectList
+									value={pack.deliveryperson_id}
 									id="deliveryPerson"
 									onChange={(e) => {
 										console.tron.log(
@@ -152,7 +202,7 @@ export default function PackageStore() {
 												{`${deliveryPerson.name} (${deliveryPerson.email})`}
 											</option>
 										))}
-								</select>
+								</SelectList>
 							</label>
 						</Select>
 					</SelectContainer>

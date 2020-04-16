@@ -8,6 +8,7 @@ export const OpHeader = styled.button`
 	background: none;
 	border: 0;
 	position: relative;
+	z-index: 2;
 `;
 
 export const TopList = styled.div`
@@ -42,7 +43,7 @@ export const OpList = styled.div`
 	box-shadow: 0px 8px 10px gray, -10px 8px 15px gray, 10px 8px 15px gray;
 	display: ${(props) => (props.visible ? 'flex' : 'none')};
 	flex-direction: column;
-	z-index: 1;
+	z-index: 3;
 
 	&::before {
 		content: '';
@@ -80,4 +81,14 @@ export const Hr = styled.hr`
 	width: 90%;
 	margin: 0 5%;
 	border: 0.5px solid ${lighten(0.3, '#999')};
+`;
+
+export const HugeCloseInvisibleButton = styled.div`
+	display: ${(props) => (props.visible ? 'block' : 'none')};
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
 `;

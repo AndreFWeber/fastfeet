@@ -83,25 +83,27 @@ export const SelectContainer = styled.div`
 	justify-content: space-between;
 `;
 
+export const SelectList = styled.select.attrs(({ value }) => ({
+	value,
+}))`
+	width: 100%;
+	border-radius: 4px;
+	position: relative;
+	border: 1px solid rgb(150, 150, 150, 0.5);
+	color: rgb(150, 150, 150);
+	font-size: 16px;
+	padding: 10px 26px 10px 12px;
+	-moz-appearance: none; /* Firefox */
+	-webkit-appearance: none; /* Safari and Chrome */
+	appearance: none;
+	background: url(${selectArrow}) no-repeat right #fff;
+	background-position: 100% 50%;
+	background-size: 6% auto;
+`;
+
 export const Select = styled.div`
 	margin-bottom: 15px;
 	width: 49%;
 	text-align: left;
 	color: rgb(78, 78, 78);
-
-	select {
-		width: 100%;
-		border-radius: 4px;
-		position: relative;
-		border: 1px solid rgb(150, 150, 150, 0.5);
-		color: rgb(150, 150, 150);
-		font-size: 16px;
-		padding: 10px 26px 10px 12px;
-		-moz-appearance: none; /* Firefox */
-		-webkit-appearance: none; /* Safari and Chrome */
-		appearance: none;
-		background: url(${selectArrow}) no-repeat right #fff;
-		background-position: 100% 50%;
-		background-size: 6% auto;
-	}
 `;

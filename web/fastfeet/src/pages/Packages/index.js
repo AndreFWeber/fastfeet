@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { MdAdd, MdSearch, MdDelete, MdCreate } from 'react-icons/md';
+import {
+	MdAdd,
+	MdSearch,
+	MdDelete,
+	MdCreate,
+	MdVisibility,
+} from 'react-icons/md';
+import { format } from 'date-fns';
+import pt from 'date-fns/locale/pt';
 import history from '../../services/history';
 import OptionsButtons from '../../components/OptionsButtons';
+import Paginator from '../../components/Paginator';
+import Modal from '../../components/Modal';
 import api from '../../services/api';
+
 import {
 	Container,
 	Header,
@@ -16,18 +27,29 @@ import {
 	Td,
 	AvatarContainer,
 	Status,
+	ViewModal,
+	Hr,
+	Signature,
+	Pbold,
+	Dates,
 } from './styles';
 
 export default function Packages() {
 	const [packages, setPackages] = useState([]);
 	const [offset, setOffset] = useState(1);
+	const [pages, setPages] = useState(1);
 	const [email, setEmail] = useState('');
+
+	const [open, setOpen] = useState(false);
+	const [modalPack, setModalPack] = useState({});
 
 	useEffect(() => {
 		async function loadPackages() {
 			try {
 				const response = await api
-					.get('deliverypackage')
+					.get('deliverypackage', {
+						params: { offset, limit: 10 },
+					})
 					.catch((error) => {
 						console.tron.log(
 							'@Packages/loadPackages ',
@@ -38,18 +60,43 @@ export default function Packages() {
 
 				if (response.status === 200) {
 					const tmp = response.data.deliveryPack.map((pack) => {
+						pack.status = '';
 						if (pack.canceled_at) {
 							pack.status = 'CANCELADA';
-						} else if (pack.end_date) {
-							pack.status = 'ENTREGUE';
-						} else if (pack.start_date) {
-							pack.status = 'RETIRADA';
-						} else {
+							pack.formatted_canceled_at = format(
+								new Date(pack.canceled_at),
+								"d'/'MM'/'YYY",
+								{ locale: pt }
+							);
+						}
+						if (pack.end_date) {
+							if (pack.status === '') {
+								pack.status = 'ENTREGUE';
+							}
+							pack.formatted_end_date = format(
+								new Date(pack.end_date),
+								"d'/'MM'/'YYY",
+								{ locale: pt }
+							);
+						}
+						if (pack.start_date) {
+							if (pack.status === '') {
+								pack.status = 'RETIRADA';
+							}
+							pack.formatted_start_date = format(
+								new Date(pack.start_date),
+								"d'/'MM'/'YYY",
+								{ locale: pt }
+							);
+						}
+						if (pack.status === '') {
 							pack.status = 'PENDENTE';
 						}
+
 						return pack;
 					});
 					setPackages(tmp);
+					setPages(response.data.pages);
 				}
 			} catch (error) {
 				console.tron.log(
@@ -60,16 +107,33 @@ export default function Packages() {
 		}
 
 		loadPackages();
-	}, []);
+	}, [offset]);
 
 	function handleSave() {}
 
 	function handleStore() {
-		history.push('/new-deliverypackage');
+		history.push('/new-deliverypackage', {
+			title: 'Cadastro de encomendas',
+		});
 	}
 
 	function handleViewButton(pack) {
 		console.tron.log('handleViewButton', pack);
+		setModalPack(pack);
+		setOpen(true);
+	}
+
+	function handleEditPackageButton(pack) {
+		console.tron.log('handleViewButton', pack);
+		history.push('/new-deliverypackage', {
+			title: 'Edição de encomendas',
+			editPack: pack,
+		});
+	}
+
+	function handlePaginate(p) {
+		setOffset(p);
+		console.tron.log('go to page', p);
 	}
 
 	async function handleCancelPackageButton(pack) {
@@ -96,8 +160,75 @@ export default function Packages() {
 
 		// '
 	}
+
 	return (
 		<Container>
+			<Modal
+				openn={open}
+				onClose={() => {
+					setOpen(false);
+				}}
+				child={
+					<ViewModal>
+						<strong>Informações da encomendas</strong>
+
+						<p>{`${
+							modalPack.recipient && modalPack.recipient.street
+						}, ${
+							modalPack.recipient && modalPack.recipient.number
+						}`}</p>
+						<p>{`${
+							modalPack.recipient && modalPack.recipient.city
+						} - ${
+							modalPack.recipient && modalPack.recipient.state
+						}`}</p>
+						<p>
+							{modalPack.recipient &&
+								modalPack.recipient.postcode}
+						</p>
+
+						{(modalPack.formatted_canceled_at ||
+							modalPack.formatted_start_date ||
+							modalPack.formatted_end_date) && (
+							<>
+								<Hr />
+								<strong>Datas</strong>
+							</>
+						)}
+						{modalPack.formatted_canceled_at && (
+							<Dates>
+								<Pbold>Cancelamento:</Pbold>
+								<p>{modalPack.formatted_canceled_at}</p>
+							</Dates>
+						)}
+						{modalPack.formatted_start_date && (
+							<Dates>
+								<Pbold>Retirada:</Pbold>
+								<p>{modalPack.formatted_start_date}</p>
+							</Dates>
+						)}
+						{modalPack.formatted_end_date && (
+							<Dates>
+								<Pbold>Entrega:</Pbold>
+								<p>{modalPack.formatted_end_date}</p>
+							</Dates>
+						)}
+						{modalPack.signature && (
+							<Signature>
+								<Hr />
+								<strong>
+									{modalPack.signature &&
+										'Assinatura do destinatário'}
+								</strong>
+								<img
+									src={modalPack.signature.url}
+									alt="signature"
+								/>
+							</Signature>
+						)}
+					</ViewModal>
+				}
+			/>
 			<Header>
 				<h1>Gerenciando encomendas</h1>
 				<div>
@@ -150,32 +281,25 @@ export default function Packages() {
 									#{pack.id < 10 ? `0${pack.id}` : pack.id}
 								</Td>
 								<Td>{pack.recipient.recipient}</Td>
-								<Td
+								<AvatarContainer
 									r={Math.floor(Math.random() * 255) + 1}
 									g={Math.floor(Math.random() * 255) + 1}
 									b={Math.floor(Math.random() * 255) + 1}
 								>
-									<AvatarContainer>
-										{pack.deliveryperson.avatar ? (
-											<img
-												src={
-													pack.deliveryperson.avatar
-														.url
-												}
-												alt="avatar"
-											/>
-										) : (
-											<div>
-												{pack.deliveryperson.name
-													.split(' ')
-													.map(
-														(n, i) => i < 2 && n[0]
-													)}
-											</div>
-										)}
-										{pack.deliveryperson.name}
-									</AvatarContainer>
-								</Td>
+									{pack.deliveryperson.avatar ? (
+										<img
+											src={pack.deliveryperson.avatar.url}
+											alt="avatar"
+										/>
+									) : (
+										<div>
+											{pack.deliveryperson.name
+												.split(' ')
+												.map((n, i) => i < 2 && n[0])}
+										</div>
+									)}
+									{pack.deliveryperson.name}
+								</AvatarContainer>
 								<Td>{pack.recipient.city}</Td>
 								<Td>{pack.recipient.state}</Td>
 								<Td>
@@ -186,6 +310,11 @@ export default function Packages() {
 								<Td>
 									<OptionsButtons
 										icon={[
+											<MdVisibility
+												color="#7159c1"
+												size={15}
+												style={{ margin: 10 }}
+											/>,
 											<MdCreate
 												color="blue"
 												size={15}
@@ -199,11 +328,15 @@ export default function Packages() {
 										]}
 										title={[
 											'Visualizar',
+											'Editar',
 											'Cancelar Encomenda',
 										]}
 										cb={[
 											() => {
 												handleViewButton(pack);
+											},
+											() => {
+												handleEditPackageButton(pack);
 											},
 											() => {
 												handleCancelPackageButton(pack);
@@ -215,6 +348,7 @@ export default function Packages() {
 						))}
 				</tbody>
 			</Table>
+			<Paginator pages={pages} onPaginate={(p) => handlePaginate(p)} />
 		</Container>
 	);
 }
