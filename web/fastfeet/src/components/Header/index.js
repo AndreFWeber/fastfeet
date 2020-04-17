@@ -41,7 +41,12 @@ export default function Header() {
 						<Link to="/deliveryperson">Entregadores</Link>
 					</LinkContainer>
 
-					<LinkContainer linkActive={active === '/recipients'}>
+					<LinkContainer
+						linkActive={
+							active === '/recipients' ||
+							active === '/new-recipient'
+						}
+					>
 						<Link to="/recipients">Destinatários</Link>
 					</LinkContainer>
 

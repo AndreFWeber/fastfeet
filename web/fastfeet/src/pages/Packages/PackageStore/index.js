@@ -24,10 +24,6 @@ export default function PackageStore({ location }) {
 	});
 
 	async function handleSave() {
-		if (pack.product === '') {
-			toast.error('Todos os campos são obrigatórios.');
-			return;
-		}
 		try {
 			const response = await api
 				.post('/deliverypackage', {

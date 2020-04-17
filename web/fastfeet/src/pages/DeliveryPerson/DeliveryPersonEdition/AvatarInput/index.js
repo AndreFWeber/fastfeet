@@ -3,13 +3,17 @@ import { useField } from '@rocketseat/unform';
 import { MdInsertPhoto } from 'react-icons/md';
 import PropTypes from 'prop-types';
 import { Container } from './styles';
-import api from '../../../services/api';
+import api from '../../../../services/api';
 
-export default function AvatarInput({ setFileId }) {
+export default function AvatarInput({ setFileId, previewUrl }) {
 	const { defaultValue, registerField } = useField('avatar');
 	const [file, setFile] = useState(defaultValue && defaultValue.id);
 	const [preview, setPreview] = useState(defaultValue && defaultValue.url);
 	const ref = useRef();
+
+	useEffect(() => {
+		if (previewUrl) setPreview(previewUrl);
+	}, [previewUrl]);
 
 	useEffect(() => {
 		if (ref.current) {

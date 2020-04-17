@@ -6,8 +6,9 @@ import Packages from '../pages/Packages';
 import DeliveryPerson from '../pages/DeliveryPerson';
 import Recipients from '../pages/Recipients';
 import Problems from '../pages/Problems';
-import DeliveryPersonEdition from '../pages/DeliveryPersonEdition';
+import DeliveryPersonEdition from '../pages/DeliveryPerson/DeliveryPersonEdition';
 import PackageStore from '../pages/Packages/PackageStore';
+import RecipientStore from '../pages/Recipients/RecipientsStore';
 
 export default function Routes() {
 	return (
@@ -31,6 +32,7 @@ export default function Routes() {
 				isPrivate
 				component={PackageStore}
 			/>
+			<Route path="/new-recipient" isPrivate component={RecipientStore} />
 		</Switch>
 	);
 }

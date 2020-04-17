@@ -1,18 +1,26 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@rocketseat/unform';
-import { MdChevronLeft, MdCheck } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { Container, Wrapper, Content, Header, Button } from './styles';
 import AvatarInput from './AvatarInput';
-import history from '../../services/history';
-import api from '../../services/api';
-import ContentHeader from '../../components/ContentHeader';
+import history from '../../../services/history';
+import api from '../../../services/api';
+import ContentHeader from '../../../components/ContentHeader';
 
-export default function DeliveryPersonEdition() {
+export default function DeliveryPersonEdition({ location }) {
 	const [fileId, setFileId] = useState(-1);
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
+	const param = location.state;
+
+	useEffect(() => {
+		console.log(param);
+		if (param.editDeliveryPerson) {
+			setName(param.editDeliveryPerson.name);
+			setEmail(param.editDeliveryPerson.email);
+		}
+	}, []);
 
 	async function handleSave() {
 		if (name === '' || email === '') {
@@ -48,6 +56,44 @@ export default function DeliveryPersonEdition() {
 		}
 	}
 
+	async function handleUpdate() {
+		if (name === '' || email === '') {
+			toast.error('Os campos de nome e e-email são obrigatórios.');
+			return;
+		}
+		const data = {
+			name,
+			email,
+			id: param.editDeliveryPerson.id,
+		};
+		if (fileId >= 0) data.avatar_id = fileId;
+
+		try {
+			const response = await api
+				.put('deliveryperson', data)
+				.catch((error) => {
+					if (
+						error.response.data.error.indexOf(
+							'email already exists'
+						)
+					) {
+						toast.error('Email já está cadastrado.');
+					} else {
+						toast.error('Não foi possível atualizar o usuário.');
+					}
+				});
+
+			if (response.status === 200) {
+				toast.success('Usuário atualizado com sucesso.');
+			}
+		} catch (error) {
+			console.tron.log(
+				'@DeliveryPersonEdition/handleUpdate Error',
+				error
+			);
+		}
+	}
+
 	function handleReturn() {
 		history.push('/deliveryperson');
 	}
@@ -56,12 +102,23 @@ export default function DeliveryPersonEdition() {
 		<Container>
 			<Wrapper>
 				<ContentHeader
-					title="Cadastro de entregadores"
+					title={param.title}
 					returnCb={handleReturn}
-					saveCb={handleSave}
+					saveCb={() => {
+						if (param.editDeliveryPerson) handleUpdate();
+						else handleSave();
+					}}
 				/>
 				<Content>
-					<AvatarInput name="avatar_id" setFileId={setFileId} />
+					<AvatarInput
+						name="avatar_id"
+						setFileId={setFileId}
+						previewUrl={
+							param.editDeliveryPerson &&
+							param.editDeliveryPerson.avatar &&
+							param.editDeliveryPerson.avatar.url
+						}
+					/>
 					<label htmlFor="name">
 						Nome
 						<Input

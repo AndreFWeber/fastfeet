@@ -118,13 +118,11 @@ export default function Packages() {
 	}
 
 	function handleViewButton(pack) {
-		console.tron.log('handleViewButton', pack);
 		setModalPack(pack);
 		setOpen(true);
 	}
 
 	function handleEditPackageButton(pack) {
-		console.tron.log('handleViewButton', pack);
 		history.push('/new-deliverypackage', {
 			title: 'Edição de encomendas',
 			editPack: pack,
@@ -157,8 +155,6 @@ export default function Packages() {
 				error
 			);
 		}
-
-		// '
 	}
 
 	return (
@@ -261,94 +257,111 @@ export default function Packages() {
 					</Button>
 				</div>
 			</Header>
-			<Table>
-				<thead>
-					<tr>
-						<Th>ID</Th>
-						<Th>Destinatário</Th>
-						<Th>Entregador</Th>
-						<Th>Cidade</Th>
-						<Th>Estado</Th>
-						<Th>Status</Th>
-						<Th>Ações</Th>
-					</tr>
-				</thead>
-				<tbody>
-					{packages &&
-						packages.map((pack) => (
-							<Tr key={pack.id}>
-								<Td>
-									#{pack.id < 10 ? `0${pack.id}` : pack.id}
-								</Td>
-								<Td>{pack.recipient.recipient}</Td>
-								<AvatarContainer
-									r={Math.floor(Math.random() * 255) + 1}
-									g={Math.floor(Math.random() * 255) + 1}
-									b={Math.floor(Math.random() * 255) + 1}
-								>
-									{pack.deliveryperson.avatar ? (
-										<img
-											src={pack.deliveryperson.avatar.url}
-											alt="avatar"
+			{packages.length > 0 && (
+				<Table>
+					<thead>
+						<tr>
+							<Th>ID</Th>
+							<Th>Destinatário</Th>
+							<Th>Entregador</Th>
+							<Th>Cidade</Th>
+							<Th>Estado</Th>
+							<Th>Status</Th>
+							<Th>Ações</Th>
+						</tr>
+					</thead>
+					<tbody>
+						{packages &&
+							packages.map((pack) => (
+								<Tr key={pack.id}>
+									<Td>
+										#
+										{pack.id < 10 ? `0${pack.id}` : pack.id}
+									</Td>
+									<Td>{pack.recipient.recipient}</Td>
+									<AvatarContainer
+										r={Math.floor(Math.random() * 255) + 1}
+										g={Math.floor(Math.random() * 255) + 1}
+										b={Math.floor(Math.random() * 255) + 1}
+									>
+										{pack.deliveryperson.avatar ? (
+											<img
+												src={
+													pack.deliveryperson.avatar
+														.url
+												}
+												alt="avatar"
+											/>
+										) : (
+											<div>
+												{pack.deliveryperson.name
+													.split(' ')
+													.map(
+														(n, i) => i < 2 && n[0]
+													)}
+											</div>
+										)}
+										{pack.deliveryperson.name}
+									</AvatarContainer>
+									<Td>{pack.recipient.city}</Td>
+									<Td>{pack.recipient.state}</Td>
+									<Td>
+										<Status status={pack.status}>
+											<strong>{pack.status}</strong>
+										</Status>
+									</Td>
+									<Td>
+										<OptionsButtons
+											icon={[
+												<MdVisibility
+													color="#7159c1"
+													size={15}
+													style={{ margin: 10 }}
+												/>,
+												<MdCreate
+													color="blue"
+													size={15}
+													style={{ margin: 10 }}
+												/>,
+												<MdDelete
+													color="red"
+													size={15}
+													style={{ margin: 10 }}
+												/>,
+											]}
+											title={[
+												'Visualizar',
+												'Editar',
+												'Cancelar Encomenda',
+											]}
+											cb={[
+												() => {
+													handleViewButton(pack);
+												},
+												() => {
+													handleEditPackageButton(
+														pack
+													);
+												},
+												() => {
+													handleCancelPackageButton(
+														pack
+													);
+												},
+											]}
 										/>
-									) : (
-										<div>
-											{pack.deliveryperson.name
-												.split(' ')
-												.map((n, i) => i < 2 && n[0])}
-										</div>
-									)}
-									{pack.deliveryperson.name}
-								</AvatarContainer>
-								<Td>{pack.recipient.city}</Td>
-								<Td>{pack.recipient.state}</Td>
-								<Td>
-									<Status status={pack.status}>
-										<strong>{pack.status}</strong>
-									</Status>
-								</Td>
-								<Td>
-									<OptionsButtons
-										icon={[
-											<MdVisibility
-												color="#7159c1"
-												size={15}
-												style={{ margin: 10 }}
-											/>,
-											<MdCreate
-												color="blue"
-												size={15}
-												style={{ margin: 10 }}
-											/>,
-											<MdDelete
-												color="red"
-												size={15}
-												style={{ margin: 10 }}
-											/>,
-										]}
-										title={[
-											'Visualizar',
-											'Editar',
-											'Cancelar Encomenda',
-										]}
-										cb={[
-											() => {
-												handleViewButton(pack);
-											},
-											() => {
-												handleEditPackageButton(pack);
-											},
-											() => {
-												handleCancelPackageButton(pack);
-											},
-										]}
-									/>
-								</Td>
-							</Tr>
-						))}
-				</tbody>
-			</Table>
-			<Paginator pages={pages} onPaginate={(p) => handlePaginate(p)} />
+									</Td>
+								</Tr>
+							))}
+					</tbody>
+				</Table>
+			)}
+			{pages > 0 && (
+				<Paginator
+					pages={pages}
+					onPaginate={(p) => handlePaginate(p)}
+				/>
+			)}
 		</Container>
 	);
 }
