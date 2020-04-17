@@ -80,25 +80,31 @@ export default function Problems() {
 	}
 
 	async function handleCancelPackageButton(pack) {
-		console.tron.log('handleCancelPackageButton', pack);
-		try {
-			const response = await api
-				.delete(`/deliverypackage/${pack.delivery_id}/cancel-delivery`)
-				.catch((error) => {
-					toast.error('Não foi possível cancelar a encomenda.');
-					console.tron.log(
-						'@Packages/handleCancelPackageButton Error',
-						error
-					);
-				});
-			if (response.status === 200) {
-				toast.success('Encomenda cancelada com sucesso.');
+		// eslint-disable-next-line no-alert
+		const r = window.confirm('Cancelar a encomenda?');
+		if (r === true) {
+			console.tron.log('handleCancelPackageButton', pack);
+			try {
+				const response = await api
+					.delete(
+						`/deliverypackage/${pack.delivery_id}/cancel-delivery`
+					)
+					.catch((error) => {
+						toast.error('Não foi possível cancelar a encomenda.');
+						console.tron.log(
+							'@Packages/handleCancelPackageButton Error',
+							error
+						);
+					});
+				if (response.status === 200) {
+					toast.success('Encomenda cancelada com sucesso.');
+				}
+			} catch (error) {
+				console.tron.log(
+					'@Packages/handleCancelPackageButton Error',
+					error
+				);
 			}
-		} catch (error) {
-			console.tron.log(
-				'@Packages/handleCancelPackageButton Error',
-				error
-			);
 		}
 	}
 

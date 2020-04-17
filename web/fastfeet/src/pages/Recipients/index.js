@@ -73,24 +73,28 @@ export default function Recipients() {
 	}
 
 	async function handleRemoveRecipientButton(recipient) {
-		try {
-			const response = await api
-				.delete(`/recipient`, { params: { id: recipient.id } })
-				.catch((error) => {
-					toast.error('Não foi possível excluir o destinatário.');
-					console.tron.log(
-						'@Recipients/handleRemoveRecipientButton Error',
-						error
-					);
-				});
-			if (response.status === 200) {
-				toast.success('Destinatário excluído com sucesso.');
+		// eslint-disable-next-line no-alert
+		const r = window.confirm('Remover o destinatário?');
+		if (r === true) {
+			try {
+				const response = await api
+					.delete(`/recipient`, { params: { id: recipient.id } })
+					.catch((error) => {
+						toast.error('Não foi possível excluir o destinatário.');
+						console.tron.log(
+							'@Recipients/handleRemoveRecipientButton Error',
+							error
+						);
+					});
+				if (response.status === 200) {
+					toast.success('Destinatário excluído com sucesso.');
+				}
+			} catch (error) {
+				console.tron.log(
+					'@Recipients/handleRemoveRecipientButton Error',
+					error
+				);
 			}
-		} catch (error) {
-			console.tron.log(
-				'@Recipients/handleRemoveRecipientButton Error',
-				error
-			);
 		}
 	}
 

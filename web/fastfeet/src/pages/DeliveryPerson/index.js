@@ -89,26 +89,30 @@ export default function DeliveryPerson() {
 	}
 
 	async function handleRemoveDeliveryPersonButton(selectedDeliveryPerson) {
-		try {
-			const response = await api
-				.delete(`/deliveryperson`, {
-					params: { id: selectedDeliveryPerson.id },
-				})
-				.catch((error) => {
-					toast.error('Não foi possível excluir o entragador.');
-					console.tron.log(
-						'@Packages/handleRemoveDeliveryPersonButton Error',
-						error
-					);
-				});
-			if (response.status === 200) {
-				toast.success('Entregador removido com sucesso.');
+		// eslint-disable-next-line no-alert
+		const r = window.confirm('Remover o entregador?');
+		if (r === true) {
+			try {
+				const response = await api
+					.delete(`/deliveryperson`, {
+						params: { id: selectedDeliveryPerson.id },
+					})
+					.catch((error) => {
+						toast.error('Não foi possível excluir o entragador.');
+						console.tron.log(
+							'@Packages/handleRemoveDeliveryPersonButton Error',
+							error
+						);
+					});
+				if (response.status === 200) {
+					toast.success('Entregador removido com sucesso.');
+				}
+			} catch (error) {
+				console.tron.log(
+					'@Packages/handleRemoveDeliveryPersonButton Error',
+					error
+				);
 			}
-		} catch (error) {
-			console.tron.log(
-				'@Packages/handleRemoveDeliveryPersonButton Error',
-				error
-			);
 		}
 	}
 
