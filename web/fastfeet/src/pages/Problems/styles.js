@@ -1,6 +1,4 @@
-/* eslint-disable no-nested-ternary */
 import styled from 'styled-components';
-import { darken } from 'polished';
 
 export const Container = styled.div`
 	width: 100%;
@@ -45,26 +43,6 @@ export const SearchBar = styled.input`
 
 	&::placeholder {
 		color: rgb(150, 150, 150);
-	}
-`;
-
-export const Button = styled.button`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin: 5px;
-	height: 34px;
-	width: 130px;
-	background: #7159c1;
-	font-weight: bold;
-	color: #fff;
-	border: 0;
-	border-radius: 4px;
-	font-size: 16px;
-	transition: background 0.2s;
-
-	&:hover {
-		background: ${darken(0.06, '#7159c1')};
 	}
 `;
 
@@ -118,6 +96,5 @@ export const ViewModal = styled.div`
 	p {
 		margin: 5px 0px;
 		color: rgb(150, 150, 150);
-		width: 60ch;
 	}
 `;

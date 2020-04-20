@@ -64,4 +64,5 @@ export default function AvatarInput({ setFileId, previewUrl }) {
 
 AvatarInput.propTypes = {
 	setFileId: PropTypes.func.isRequired,
+	previewUrl: PropTypes.string.isRequired,
 };

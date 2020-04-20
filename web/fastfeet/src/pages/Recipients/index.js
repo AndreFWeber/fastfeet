@@ -1,28 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { MdAdd, MdSearch, MdDelete, MdCreate } from 'react-icons/md';
+import { MdAdd, MdDelete, MdCreate } from 'react-icons/md';
 import history from '../../services/history';
 import OptionsButtons from '../../components/OptionsButtons';
 import Paginator from '../../components/Paginator';
+import SearchBarC from '../../components/Search';
 import api from '../../services/api';
 
-import {
-	Container,
-	Header,
-	Search,
-	SearchBar,
-	Button,
-	Table,
-	Th,
-	Tr,
-	Td,
-} from './styles';
+import { Container, Header, Button, Table, Th, Tr, Td } from './styles';
 
 export default function Recipients() {
 	const [recipients, setRecipients] = useState([]);
 	const [offset, setOffset] = useState(1);
 	const [pages, setPages] = useState(1);
-	const [email, setEmail] = useState('');
+	const [refresh, setRefresh] = useState(false);
 
 	useEffect(() => {
 		async function loadRecipients() {
@@ -52,7 +43,27 @@ export default function Recipients() {
 		}
 
 		loadRecipients();
-	}, [offset]);
+	}, [offset, refresh]);
+
+	async function getSearchResults(opt) {
+		try {
+			const response = await api
+				.get('recipient', {
+					params: { q: opt, offset: 1, limit: 10 },
+				})
+				.catch(() => {
+					toast.error(
+						'Não foi possível buscar os destinatários cadastrados.'
+					);
+				});
+			if (response.status === 200) {
+				setRecipients(response.data.recipients);
+				setPages(response.data.pages);
+			}
+		} catch (error) {
+			console.tron.log('@getSearchResults/handleSave Error', error);
+		}
+	}
 
 	function handleStore() {
 		history.push('/new-recipient', {
@@ -88,6 +99,7 @@ export default function Recipients() {
 					});
 				if (response.status === 200) {
 					toast.success('Destinatário excluído com sucesso.');
+					setRefresh(!refresh);
 				}
 			} catch (error) {
 				console.tron.log(
@@ -103,23 +115,10 @@ export default function Recipients() {
 			<Header>
 				<h1>Gerenciando destinatários</h1>
 				<div>
-					<Search>
-						<MdSearch
-							style={{ marginLeft: '1rem', position: 'absolute' }}
-							color="rgb(150, 150, 150)"
-							size="1.5em"
-						/>
-						<SearchBar
-							id="email"
-							name="email"
-							type="search"
-							value={email}
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							placeholder="Buscar por entregadores"
-						/>
-					</Search>
+					<SearchBarC
+						getSearchResults={getSearchResults}
+						placeholder="Buscar destinatários"
+					/>
 					<Button
 						type="button"
 						save

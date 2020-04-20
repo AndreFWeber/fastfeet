@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
 	modal: {
@@ -12,23 +13,8 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-export default function CModal({ openn, child, onClose, onOpen }) {
-	const [open, setOpen] = useState(false);
-
+export default function CModal({ openn, child, onClose }) {
 	const classes = useStyles();
-
-	useEffect(() => {
-		console.log('OPEJ ', openn);
-		setOpen(openn);
-	}, [openn]);
-
-	// const handleOpen = () => {
-	// 	setOpen(true);
-	// };
-
-	const handleClose = () => {
-		setOpen(false);
-	};
 
 	return (
 		<>
@@ -49,3 +35,9 @@ export default function CModal({ openn, child, onClose, onOpen }) {
 		</>
 	);
 }
+
+CModal.propTypes = {
+	openn: PropTypes.bool.isRequired,
+	child: PropTypes.element.isRequired,
+	onClose: PropTypes.func.isRequired,
+};

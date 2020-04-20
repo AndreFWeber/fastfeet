@@ -1,44 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import {
-	MdAdd,
-	MdSearch,
-	MdDelete,
-	MdCreate,
-	MdVisibility,
-} from 'react-icons/md';
-import { format } from 'date-fns';
-import pt from 'date-fns/locale/pt';
+import { MdAdd, MdDelete, MdCreate } from 'react-icons/md';
 import history from '../../services/history';
 import OptionsButtons from '../../components/OptionsButtons';
 import Paginator from '../../components/Paginator';
-import Modal from '../../components/Modal';
+import SearchBarC from '../../components/Search';
 import api from '../../services/api';
 
 import {
 	Container,
 	Header,
-	Search,
-	SearchBar,
 	Button,
 	Table,
 	Th,
 	Tr,
 	Td,
 	AvatarContainer,
-	Status,
-	ViewModal,
-	Hr,
-	Signature,
-	Pbold,
-	Dates,
 } from './styles';
 
 export default function DeliveryPerson() {
 	const [deliveryPeople, setDeliveryPeople] = useState([]);
 	const [offset, setOffset] = useState(1);
 	const [pages, setPages] = useState(1);
-	const [email, setEmail] = useState('');
+	const [refresh, setRefresh] = useState(false);
 
 	useEffect(() => {
 		async function loadDeliveryPerson() {
@@ -69,7 +53,7 @@ export default function DeliveryPerson() {
 		}
 
 		loadDeliveryPerson();
-	}, [offset]);
+	}, [offset, refresh]);
 
 	function handleStore() {
 		history.push('/new-deliveryperson', {
@@ -106,6 +90,7 @@ export default function DeliveryPerson() {
 					});
 				if (response.status === 200) {
 					toast.success('Entregador removido com sucesso.');
+					setRefresh(!refresh);
 				}
 			} catch (error) {
 				console.tron.log(
@@ -116,28 +101,38 @@ export default function DeliveryPerson() {
 		}
 	}
 
+	async function getSearchResults(opt) {
+		try {
+			const response = await api
+				.get('deliveryperson', {
+					params: { q: opt, offset: 1, limit: 10 },
+				})
+				.catch(() => {
+					toast.error(
+						'Não foi possível buscar os entregadores cadastradas.'
+					);
+				});
+			if (response.status === 200) {
+				setDeliveryPeople(response.data.deliveryPerson);
+				setPages(response.data.pages);
+			}
+		} catch (error) {
+			console.tron.log(
+				'@getSelectPackagesOptions/handleSave Error',
+				error
+			);
+		}
+	}
+
 	return (
 		<Container>
 			<Header>
 				<h1>Gerenciando entregadores</h1>
 				<div>
-					<Search>
-						<MdSearch
-							style={{ marginLeft: '1rem', position: 'absolute' }}
-							color="rgb(150, 150, 150)"
-							size="1.5em"
-						/>
-						<SearchBar
-							id="email"
-							name="email"
-							type="search"
-							value={email}
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							placeholder="Buscar por entregadores"
-						/>
-					</Search>
+					<SearchBarC
+						getSearchResults={getSearchResults}
+						placeholder="Buscar Entregadores"
+					/>
 					<Button
 						type="button"
 						save

@@ -191,6 +191,7 @@ class DeliveryPackController {
 			limit: Yup.number().transform((originalValue) =>
 				originalValue <= 0 ? 20 : originalValue
 			),
+			q: Yup.string(),
 		});
 		if (!(await schema.isValid(req.query))) {
 			return res.status(400).json({
@@ -199,8 +200,19 @@ class DeliveryPackController {
 		}
 		const { offset = 1, limit = 20 } = await schema.cast(req.query);
 
-		const count = await DeliveryPacks.count({});
+		const count = await DeliveryPacks.count({
+			where: {
+				product: {
+					[Op.iLike]: `%${req.query.q || ''}%`,
+				},
+			},
+		});
 		const deliveryPack = await DeliveryPacks.findAll({
+			where: {
+				product: {
+					[Op.iLike]: `%${req.query.q || ''}%`,
+				},
+			},
 			limit,
 			offset: (offset - 1) * limit,
 			attributes: [
@@ -252,6 +264,70 @@ class DeliveryPackController {
 			offset,
 			limit,
 			pages: Math.ceil(count / limit),
+		});
+	}
+
+	async indexOne(req, res) {
+		const schema = Yup.object().shape({
+			id: Yup.number().required(),
+		});
+		if (!(await schema.isValid(req.params))) {
+			return res
+				.status(400)
+				.json({ error: 'id must be an integer sent on params.' });
+		}
+
+		const deliveryPack = await DeliveryPacks.findOne({
+			where: {
+				id: req.params.id,
+			},
+			attributes: [
+				'id',
+				'product',
+				'product',
+				'canceled_at',
+				'start_date',
+				'end_date',
+			],
+			include: [
+				{
+					model: File,
+					as: 'signature',
+					attributes: ['name', 'path', 'url'],
+				},
+				{
+					model: DeliveryPerson,
+					as: 'deliveryperson',
+					attributes: ['id', 'name', 'email'],
+					include: [
+						{
+							model: File,
+							as: 'avatar',
+							attributes: ['id', 'path', 'url'],
+						},
+					],
+				},
+				{
+					model: Recipients,
+					as: 'recipient',
+					attributes: [
+						'id',
+						'recipient',
+						'street',
+						'number',
+						'complement',
+						'state',
+						'city',
+						'postcode',
+					],
+				},
+			],
+		});
+		if (!deliveryPack) {
+			return res.status(400).json({ error: 'Package id not found.' });
+		}
+		return res.json({
+			deliveryPack,
 		});
 	}
 

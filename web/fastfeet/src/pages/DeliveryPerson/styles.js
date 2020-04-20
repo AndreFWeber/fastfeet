@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import styled from 'styled-components';
-import { darken, lighten } from 'polished';
+import { darken } from 'polished';
 
 export const Container = styled.div`
 	width: 100%;
@@ -126,10 +126,4 @@ export const Td = styled.td`
 	border: none;
 	color: rgb(150, 150, 150);
 	padding: 10px;
-`;
-
-export const Hr = styled.hr`
-	width: 90%;
-	margin: 10px 5%;
-	border: 0.5px solid ${lighten(0.3, '#999')};
 `;

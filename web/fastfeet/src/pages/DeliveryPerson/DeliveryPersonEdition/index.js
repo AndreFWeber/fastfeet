@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '@rocketseat/unform';
 import { toast } from 'react-toastify';
-import { Container, Wrapper, Content, Header, Button } from './styles';
+import PropTypes from 'prop-types';
+import { Container, Wrapper, Content } from './styles';
 import AvatarInput from './AvatarInput';
 import history from '../../../services/history';
 import api from '../../../services/api';
@@ -15,12 +16,11 @@ export default function DeliveryPersonEdition({ location }) {
 	const param = location.state;
 
 	useEffect(() => {
-		console.log(param);
 		if (param.editDeliveryPerson) {
 			setName(param.editDeliveryPerson.name);
 			setEmail(param.editDeliveryPerson.email);
 		}
-	}, []);
+	}, [param]);
 
 	async function handleSave() {
 		if (name === '' || email === '') {
@@ -152,3 +152,7 @@ export default function DeliveryPersonEdition({ location }) {
 		</Container>
 	);
 }
+
+DeliveryPersonEdition.propTypes = {
+	location: PropTypes.string.isRequired,
+};

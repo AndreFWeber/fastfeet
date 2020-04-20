@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Input } from '@rocketseat/unform';
+import PropTypes from 'prop-types';
 import {
 	Container,
 	Wrapper,
@@ -26,11 +27,10 @@ export default function RecipientStore({ location }) {
 	const param = location.state;
 
 	useEffect(() => {
-		console.tron.log(param);
 		if (param.editRecipient) {
-			setRecipients({ ...recipients, ...param.editRecipient });
+			setRecipients((r) => ({ ...r, ...param.editRecipient }));
 		}
-	}, []);
+	}, [param.editRecipient]);
 
 	async function handleSave() {
 		const data = { ...recipients };
@@ -235,3 +235,7 @@ export default function RecipientStore({ location }) {
 		</Container>
 	);
 }
+
+RecipientStore.propTypes = {
+	location: PropTypes.string.isRequired,
+};

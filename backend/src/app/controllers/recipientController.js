@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Recipients from '../models/Recipients';
 
 class RecipientController {
@@ -96,6 +97,7 @@ class RecipientController {
 			limit: Yup.number().transform((originalValue) =>
 				originalValue <= 0 ? 20 : originalValue
 			),
+			q: Yup.string(),
 		});
 		if (!(await schema.isValid(req.query))) {
 			return res.status(400).json({
@@ -104,8 +106,19 @@ class RecipientController {
 		}
 		const { offset = 1, limit = 20 } = await schema.cast(req.query);
 
-		const count = await Recipients.count({});
+		const count = await Recipients.count({
+			where: {
+				recipient: {
+					[Op.iLike]: `%${req.query.q || ''}%`,
+				},
+			},
+		});
 		const recipients = await Recipients.findAll({
+			where: {
+				recipient: {
+					[Op.iLike]: `%${req.query.q || ''}%`,
+				},
+			},
 			limit,
 			offset: (offset - 1) * limit,
 			attributes: [

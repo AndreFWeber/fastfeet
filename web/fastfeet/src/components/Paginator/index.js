@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import PropTypes from 'prop-types';
 import { Container, Button } from './styles';

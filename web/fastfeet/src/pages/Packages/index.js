@@ -1,25 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import {
-	MdAdd,
-	MdSearch,
-	MdDelete,
-	MdCreate,
-	MdVisibility,
-} from 'react-icons/md';
+import { MdAdd, MdDelete, MdCreate, MdVisibility } from 'react-icons/md';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import history from '../../services/history';
 import OptionsButtons from '../../components/OptionsButtons';
 import Paginator from '../../components/Paginator';
+import SearchBarC from '../../components/Search';
 import Modal from '../../components/Modal';
 import api from '../../services/api';
 
 import {
 	Container,
 	Header,
-	Search,
-	SearchBar,
 	Button,
 	Table,
 	Th,
@@ -38,9 +31,8 @@ export default function Packages() {
 	const [packages, setPackages] = useState([]);
 	const [offset, setOffset] = useState(1);
 	const [pages, setPages] = useState(1);
-	const [email, setEmail] = useState('');
-
 	const [open, setOpen] = useState(false);
+	const [refresh, setRefresh] = useState(false);
 	const [modalPack, setModalPack] = useState({});
 
 	useEffect(() => {
@@ -107,9 +99,7 @@ export default function Packages() {
 		}
 
 		loadPackages();
-	}, [offset]);
-
-	function handleSave() {}
+	}, [offset, refresh]);
 
 	function handleStore() {
 		history.push('/new-deliverypackage', {
@@ -151,6 +141,7 @@ export default function Packages() {
 					});
 				if (response.status === 200) {
 					toast.success('Encomenda cancelada com sucesso.');
+					setRefresh(!refresh);
 				}
 			} catch (error) {
 				console.tron.log(
@@ -158,6 +149,65 @@ export default function Packages() {
 					error
 				);
 			}
+		}
+	}
+
+	async function getSearchResults(opt) {
+		try {
+			const response = await api
+				.get('deliverypackage', {
+					params: { q: opt, offset: 1, limit: 10 },
+				})
+				.catch(() => {
+					toast.error(
+						'Não foi possível buscar as encomendas cadastradas.'
+					);
+				});
+			if (response.status === 200) {
+				const tmp = response.data.deliveryPack.map((pack) => {
+					pack.status = '';
+					if (pack.canceled_at) {
+						pack.status = 'CANCELADA';
+						pack.formatted_canceled_at = format(
+							new Date(pack.canceled_at),
+							"d'/'MM'/'YYY",
+							{ locale: pt }
+						);
+					}
+					if (pack.end_date) {
+						if (pack.status === '') {
+							pack.status = 'ENTREGUE';
+						}
+						pack.formatted_end_date = format(
+							new Date(pack.end_date),
+							"d'/'MM'/'YYY",
+							{ locale: pt }
+						);
+					}
+					if (pack.start_date) {
+						if (pack.status === '') {
+							pack.status = 'RETIRADA';
+						}
+						pack.formatted_start_date = format(
+							new Date(pack.start_date),
+							"d'/'MM'/'YYY",
+							{ locale: pt }
+						);
+					}
+					if (pack.status === '') {
+						pack.status = 'PENDENTE';
+					}
+
+					return pack;
+				});
+				setPackages(tmp);
+				setPages(response.data.pages);
+			}
+		} catch (error) {
+			console.tron.log(
+				'@getSelectPackagesOptions/handleSave Error',
+				error
+			);
 		}
 	}
 
@@ -232,23 +282,10 @@ export default function Packages() {
 			<Header>
 				<h1>Gerenciando encomendas</h1>
 				<div>
-					<Search>
-						<MdSearch
-							style={{ marginLeft: '1rem', position: 'absolute' }}
-							color="rgb(150, 150, 150)"
-							size="1.5em"
-						/>
-						<SearchBar
-							id="email"
-							name="email"
-							type="search"
-							value={email}
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							placeholder="Buscar por entregadores"
-						/>
-					</Search>
+					<SearchBarC
+						getSearchResults={getSearchResults}
+						placeholder="Buscar Encomendas"
+					/>
 					<Button
 						type="button"
 						save

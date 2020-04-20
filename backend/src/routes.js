@@ -47,10 +47,11 @@ routes.delete('/deliveryperson', DeliveryPersonController.delete);
 
 routes.post('/deliverypackage', DeliveryPacksController.store);
 routes.get('/deliverypackage', DeliveryPacksController.index);
+routes.get('/deliverypackage/:id/seek', DeliveryPacksController.indexOne);
 routes.put('/deliverypackage', DeliveryPacksController.update);
 routes.delete('/deliverypackage', DeliveryPacksController.delete);
-
 routes.get('/deliverypackage/problems', DeliveryProblemsController.index);
+
 routes.get(
 	'/deliverypackage/:id/problems',
 	DeliveryProblemsController.indexOne

@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import styled from 'styled-components';
-import { darken, lighten } from 'polished';
+import { darken } from 'polished';
 
 export const Container = styled.div`
 	width: 100%;

@@ -1,27 +1,62 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@rocketseat/unform';
 import { toast } from 'react-toastify';
-import {
-	Container,
-	Wrapper,
-	Content,
-	Select,
-	SelectContainer,
-	SelectList,
-} from './styles';
+import PropTypes from 'prop-types';
+import ASelect from '../../../components/ASelect';
+import { Container, Wrapper, Content, StyledForm } from './styles';
 import ContentHeader from '../../../components/ContentHeader';
 import history from '../../../services/history';
 import api from '../../../services/api';
 
+const colourStyles = {
+	container: (styles) => ({
+		...styles,
+		width: '100%',
+		paddingTop: 15,
+		color: 'rgb(150, 150, 150)',
+	}),
+	control: (styles) => ({
+		...styles,
+		backgroundColor: 'transparent',
+		height: '44px',
+		fontWeight: '100',
+	}),
+	input: (styles) => ({
+		...styles,
+		color: 'rgb(150, 150, 150)',
+	}),
+	placeholder: (styles) => ({
+		...styles,
+		color: 'rgb(150, 150, 150)',
+	}),
+	singleValue: (styles) => ({
+		...styles,
+		color: 'rgb(150, 150, 150)',
+	}),
+};
+
 export default function PackageStore({ location }) {
-	const [recipients, setRecipients] = useState([]);
-	const [deliveryPeople, setDeliveryPeople] = useState([]);
+	const formRef = useRef(null);
 	const [pack, setPack] = useState({
 		recipient_id: -1,
 		deliveryperson_id: -1,
 		product: '',
 	});
+	const param = location.state;
+
+	useEffect(() => {
+		if (param.editPack) {
+			setPack((p) => {
+				return {
+					...p,
+					product: param.editPack.product,
+					recipient_id: param.editPack.recipient.id,
+					deliveryperson_id: param.editPack.deliveryperson.id,
+				};
+			});
+		}
+	}, [param.editPack]);
 
 	async function handleSave() {
 		try {
@@ -49,7 +84,7 @@ export default function PackageStore({ location }) {
 		try {
 			const data = {
 				...pack,
-				package_id: location.state.editPack.id,
+				package_id: param.editPack.id,
 			};
 			const response = await api
 				.put('/deliverypackage', data)
@@ -69,76 +104,59 @@ export default function PackageStore({ location }) {
 		history.push('/packages');
 	}
 
-	useEffect(() => {
-		async function loadRecipients() {
-			try {
-				const response = await api.get('recipient').catch((error) => {
-					toast.error('Não foi buscar os destinatários cadastrados.');
+	async function getSelectRecipientsOptions(opt, callback) {
+		try {
+			const response = await api
+				.get('recipient', { params: { q: opt } })
+				.catch(() => {
+					toast.error(
+						'Não foi possível buscar os destinatários cadastrados.'
+					);
 				});
-				if (response.status === 200) {
-					if (response.data.recipients.length) {
-						setRecipients(response.data.recipients);
-						setPack((p) => {
-							return {
-								...p,
-								recipient_id:
-									(location.state.editPack &&
-										location.state.editPack.recipient.id) ||
-									response.data.recipients[0].id,
-							};
-						});
-					}
-				}
-			} catch (error) {
-				console.tron.log('@PackageStore/handleSave Error', error);
+			if (response.status === 200) {
+				const opts = response.data.recipients.map((recipient) => ({
+					value: recipient.id,
+					label: recipient.recipient,
+				}));
+				callback(opts);
 			}
+		} catch (error) {
+			console.tron.log('@PackageStore/handleSave Error', error);
 		}
-		async function loadDeliveryPeople() {
-			try {
-				const response = await api
-					.get('deliveryperson')
-					.catch((error) => {
-						toast.error(
-							'Não foi buscar os entregadores cadastrados.'
-						);
-					});
-				if (response.status === 200) {
-					if (response.data.deliveryPerson.length) {
-						setDeliveryPeople(response.data.deliveryPerson);
-						setPack((p) => {
-							return {
-								...p,
-								deliveryperson_id:
-									(location.state.editPack &&
-										location.state.editPack.deliveryperson
-											.id) ||
-									response.data.deliveryPerson[0].id,
-							};
-						});
-					}
-				}
-			} catch (error) {
-				console.tron.log('@loadDeliveryPeople/handleSave Error', error);
+	}
+
+	async function getSelectDeliveryPeopleOptions(opt, callback) {
+		try {
+			const response = await api
+				.get('deliveryperson', { params: { q: opt } })
+				.catch(() => {
+					toast.error(
+						'Não foi possível buscar os entregadores cadastrados.'
+					);
+				});
+			if (response.status === 200) {
+				const opts = response.data.deliveryPerson.map((person) => ({
+					value: person.id,
+					label: person.name,
+				}));
+				callback(opts);
 			}
+		} catch (error) {
+			console.tron.log(
+				'@getSelectDeliveryPeopleOptions/handleSave Error',
+				error
+			);
 		}
-		loadRecipients();
-		loadDeliveryPeople();
-		if (location.state.editPack) {
-			setPack({
-				...pack,
-				product: location.state.editPack.product,
-			});
-		}
-	}, []);
+	}
 
 	return (
 		<Container>
 			<Wrapper>
 				<ContentHeader
-					title={location.state.title}
+					title={param.title}
 					returnCb={handleReturn}
 					saveCb={() => {
-						if (location.state.editPack) {
+						if (param.editPack) {
 							handleUpdate();
 						} else {
 							handleSave();
@@ -146,62 +164,56 @@ export default function PackageStore({ location }) {
 					}}
 				/>
 				<Content>
-					<SelectContainer>
-						<Select>
-							<label htmlFor="">
-								Destinatário
-								<SelectList
-									value={pack.recipient_id}
-									id="recipients"
-									onChange={(e) => {
-										setPack({
-											...pack,
-											recipient_id: e.target.value,
-										});
-									}}
-								>
-									{recipients &&
-										recipients.map((recipient) => (
-											<option
-												value={recipient.id}
-												key={recipient.id}
-											>
-												{recipient.recipient}
-											</option>
-										))}
-								</SelectList>
-							</label>
-						</Select>
-						<Select>
-							<label htmlFor="">
-								Entregador
-								<SelectList
-									value={pack.deliveryperson_id}
-									id="deliveryPerson"
-									onChange={(e) => {
-										console.tron.log(
-											'CHANGE ',
-											e.target.value
-										);
-										setPack({
-											...pack,
-											deliveryperson_id: e.target.value,
-										});
-									}}
-								>
-									{deliveryPeople &&
-										deliveryPeople.map((deliveryPerson) => (
-											<option
-												value={deliveryPerson.id}
-												key={deliveryPerson.id}
-											>
-												{`${deliveryPerson.name} (${deliveryPerson.email})`}
-											</option>
-										))}
-								</SelectList>
-							</label>
-						</Select>
-					</SelectContainer>
+					<StyledForm ref={formRef}>
+						<label htmlFor="entregador">
+							Destinatário
+							<ASelect
+								type="text"
+								name="recipient_id"
+								loadOptions={getSelectRecipientsOptions}
+								styles={colourStyles}
+								placeholder={
+									// Couldnt use it properly...setting a value :/
+									param.editPack
+										? param.editPack.recipient.recipient
+										: 'Destinatários'
+								}
+								noOptionsMessage={() =>
+									'Nenhum destinatário encontrado'
+								}
+								onChange={(v) => {
+									setPack((p) => ({
+										...p,
+										recipient_id: v.value,
+									}));
+								}}
+							/>
+						</label>
+						<label htmlFor="entregador">
+							Entregador
+							<ASelect
+								type="text"
+								name="deliveryperson_id"
+								loadOptions={getSelectDeliveryPeopleOptions}
+								placeholder={
+									// Couldnt use it properly...setting a value :/
+									param.editPack
+										? param.editPack.deliveryperson.name
+										: 'Entregadores'
+								}
+								styles={colourStyles}
+								noOptionsMessage={() =>
+									'Nenhum entregador encontrado'
+								}
+								onChange={(v) => {
+									setPack((p) => ({
+										...p,
+										deliveryperson_id: v.value,
+									}));
+								}}
+							/>
+						</label>
+					</StyledForm>
 					<label htmlFor="product">
 						Nome do produto
 						<Input
@@ -223,3 +235,7 @@ export default function PackageStore({ location }) {
 		</Container>
 	);
 }
+
+PackageStore.propTypes = {
+	location: PropTypes.string.isRequired,
+};

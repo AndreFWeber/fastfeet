@@ -21,7 +21,7 @@ export default function Header() {
 	return (
 		<Container>
 			<Content>
-				<nav active>
+				<nav>
 					<img src={logo} alt="FastFeet" />
 					<LinkContainer
 						linkActive={

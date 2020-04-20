@@ -100,6 +100,7 @@ class DeliveryPersonController {
 			limit: Yup.number().transform((originalValue) =>
 				originalValue <= 0 ? 20 : originalValue
 			),
+			q: Yup.string(),
 		});
 		if (!(await schema.isValid(req.query))) {
 			return res.status(400).json({
@@ -108,8 +109,19 @@ class DeliveryPersonController {
 		}
 		const { offset = 1, limit = 20 } = await schema.cast(req.query);
 
-		const count = await DeliveryPerson.count({});
+		const count = await DeliveryPerson.count({
+			where: {
+				name: {
+					[Op.iLike]: `%${req.query.q || ''}%`,
+				},
+			},
+		});
 		const deliveryPerson = await DeliveryPerson.findAll({
+			where: {
+				name: {
+					[Op.iLike]: `%${req.query.q || ''}%`,
+				},
+			},
 			limit,
 			offset: (offset - 1) * limit,
 			attributes: ['id', 'name', 'email', 'avatar_id'],

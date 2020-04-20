@@ -1,38 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import {
-	MdAdd,
-	MdSearch,
-	MdDelete,
-	MdCreate,
-	MdVisibility,
-} from 'react-icons/md';
-import { format } from 'date-fns';
-import pt from 'date-fns/locale/pt';
-import history from '../../services/history';
+import { MdDelete, MdVisibility } from 'react-icons/md';
+import SearchBarC from '../../components/Search';
 import OptionsButtons from '../../components/OptionsButtons';
 import Paginator from '../../components/Paginator';
 import Modal from '../../components/Modal';
 import api from '../../services/api';
 
-import {
-	Container,
-	Header,
-	Search,
-	SearchBar,
-	Button,
-	Table,
-	Th,
-	Tr,
-	Td,
-	AvatarContainer,
-	Status,
-	ViewModal,
-	Hr,
-	Signature,
-	Pbold,
-	Dates,
-} from './styles';
+import { Container, Header, Table, Th, Tr, Td, ViewModal } from './styles';
 
 export default function Problems() {
 	const [packages, setPackages] = useState([]);
@@ -40,7 +15,6 @@ export default function Problems() {
 	const [pages, setPages] = useState(1);
 	const [open, setOpen] = useState(false);
 	const [modalPack, setModalPack] = useState({});
-	const [search, setSearch] = useState('');
 
 	useEffect(() => {
 		async function loadPackages() {
@@ -108,6 +82,38 @@ export default function Problems() {
 		}
 	}
 
+	async function getSearchResults(opt) {
+		try {
+			const query = opt
+				? `/deliverypackage/${opt}/problems`
+				: '/deliverypackage/problems';
+			console.tron.log(opt, query);
+			const response = await api
+				.get(query, {
+					params: { offset: 1, limit: 10 },
+				})
+				.catch((error) => {
+					if (error.message.indexOf('400')) {
+						setPackages([]);
+						setPages(0);
+					} else {
+						toast.error(
+							'Não foi possível buscar os destinatários cadastrados.'
+						);
+					}
+				});
+			if (response.status === 200) {
+				if (opt) setPackages([response.data]);
+				else setPackages(response.data.deliveryProblems);
+				setPages(response.data.pages);
+			} else {
+				console.tron.log('------------------', response.status);
+			}
+		} catch (error) {
+			console.tron.log('@getSearchResults/handleSave Error', error);
+		}
+	}
+
 	return (
 		<Container>
 			<Modal
@@ -125,23 +131,10 @@ export default function Problems() {
 			<Header>
 				<h1>Problemas na entrega</h1>
 				<div>
-					<Search>
-						<MdSearch
-							style={{ marginLeft: '1rem', position: 'absolute' }}
-							color="rgb(150, 150, 150)"
-							size="1.5em"
-						/>
-						<SearchBar
-							id="searchBar"
-							name="searchBar"
-							type="search"
-							value={search}
-							onChange={(e) => {
-								setSearch(e.target.value);
-							}}
-							placeholder="Buscar por entregadores"
-						/>
-					</Search>
+					<SearchBarC
+						getSearchResults={getSearchResults}
+						placeholder="Buscar Encomendas"
+					/>
 				</div>
 			</Header>
 			{packages.length > 0 && (
