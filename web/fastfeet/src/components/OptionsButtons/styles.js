@@ -35,8 +35,8 @@ export const TopList = styled.div`
 export const OpList = styled.div`
 	position: absolute;
 	width: 260px;
-	left: calc(-100% - 11px); //icon size 22
 	top: calc(10% + 30px);
+	transform: translate(-119px);
 	background: ${darken(0.04, '#fff')};
 	border-radius: 4px;
 

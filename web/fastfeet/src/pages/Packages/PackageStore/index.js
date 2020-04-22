@@ -240,5 +240,5 @@ export default function PackageStore({ location }) {
 }
 
 PackageStore.propTypes = {
-	location: PropTypes.string.isRequired,
+	location: PropTypes.shape.isRequired,
 };

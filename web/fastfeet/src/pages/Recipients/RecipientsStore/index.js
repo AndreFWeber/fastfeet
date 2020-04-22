@@ -237,5 +237,5 @@ export default function RecipientStore({ location }) {
 }
 
 RecipientStore.propTypes = {
-	location: PropTypes.string.isRequired,
+	location: PropTypes.shape.isRequired,
 };

@@ -153,5 +153,5 @@ export default function DeliveryPersonEdition({ location }) {
 }
 
 DeliveryPersonEdition.propTypes = {
-	location: PropTypes.string.isRequired,
+	location: PropTypes.shape.isRequired,
 };
