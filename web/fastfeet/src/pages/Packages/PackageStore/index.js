@@ -121,7 +121,10 @@ export default function PackageStore({ location }) {
 				callback(opts);
 			}
 		} catch (error) {
-			console.tron.log('@PackageStore/handleSave Error', error);
+			console.tron.log(
+				'@PackageStore/getSelectRecipientsOptions Error',
+				error
+			);
 		}
 	}
 
@@ -143,7 +146,7 @@ export default function PackageStore({ location }) {
 			}
 		} catch (error) {
 			console.tron.log(
-				'@getSelectDeliveryPeopleOptions/handleSave Error',
+				'@PackageStore/getSelectDeliveryPeopleOptions Error',
 				error
 			);
 		}

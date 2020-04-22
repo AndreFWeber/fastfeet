@@ -35,10 +35,7 @@ export default function Recipients() {
 					setPages(response.data.pages);
 				}
 			} catch (error) {
-				console.tron.log(
-					'@DeliveryPersonEdition/handleSave Error',
-					error
-				);
+				console.tron.log('@Recipients/loadRecipients Error', error);
 			}
 		}
 
@@ -61,7 +58,7 @@ export default function Recipients() {
 				setPages(response.data.pages);
 			}
 		} catch (error) {
-			console.tron.log('@getSearchResults/handleSave Error', error);
+			console.tron.log('@Recipients/getSearchResults Error', error);
 		}
 	}
 
@@ -80,7 +77,6 @@ export default function Recipients() {
 
 	function handlePaginate(p) {
 		setOffset(p);
-		console.tron.log('go to page', p);
 	}
 
 	async function handleRemoveRecipientButton(recipient) {

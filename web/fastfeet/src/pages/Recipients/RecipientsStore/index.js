@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Input } from '@rocketseat/unform';
 import PropTypes from 'prop-types';
+import InputMask from 'react-input-mask';
 import {
 	Container,
 	Wrapper,
@@ -82,8 +83,6 @@ export default function RecipientStore({ location }) {
 	function handleReturn() {
 		history.push('/recipients');
 	}
-
-	useEffect(() => {}, []);
 
 	return (
 		<Container>
@@ -214,10 +213,11 @@ export default function RecipientStore({ location }) {
 						<StyledInput width="33%">
 							<label htmlFor="postcode">
 								CEP
-								<Input
+								<InputMask
 									id="postcode"
 									name="postcode"
 									type="postcode"
+									mask="99.999-999"
 									value={recipients.postcode}
 									onChange={(e) => {
 										setRecipients({

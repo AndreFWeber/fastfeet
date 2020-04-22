@@ -130,7 +130,6 @@ export default function DeliveryPersonEdition({ location }) {
 								setName(e.target.value);
 							}}
 							placeholder="Nome do entregador"
-							accept="image/*"
 						/>
 					</label>
 					<br />

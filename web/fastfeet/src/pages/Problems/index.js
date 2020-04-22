@@ -25,7 +25,7 @@ export default function Problems() {
 					})
 					.catch((error) => {
 						console.tron.log(
-							'@Packages/loadPackages ',
+							'@Problems/loadPackages ',
 							error.response.data.error
 						);
 						toast.error('Não foi possível buscar as encomendas.');
@@ -36,7 +36,7 @@ export default function Problems() {
 					setPages(response.data.pages);
 				}
 			} catch (error) {
-				console.tron.log('@Problems/handleSave Error', error);
+				console.tron.log('@Problems/loadPackages Error', error);
 			}
 		}
 
@@ -50,14 +50,12 @@ export default function Problems() {
 
 	function handlePaginate(p) {
 		setOffset(p);
-		console.tron.log('go to page', p);
 	}
 
 	async function handleCancelPackageButton(pack) {
 		// eslint-disable-next-line no-alert
 		const r = window.confirm('Cancelar a encomenda?');
 		if (r === true) {
-			console.tron.log('handleCancelPackageButton', pack);
 			try {
 				const response = await api
 					.delete(
@@ -66,7 +64,7 @@ export default function Problems() {
 					.catch((error) => {
 						toast.error('Não foi possível cancelar a encomenda.');
 						console.tron.log(
-							'@Packages/handleCancelPackageButton Error',
+							'@Problems/handleCancelPackageButton Error',
 							error
 						);
 					});
@@ -75,7 +73,7 @@ export default function Problems() {
 				}
 			} catch (error) {
 				console.tron.log(
-					'@Packages/handleCancelPackageButton Error',
+					'@Problems/handleCancelPackageButton Error',
 					error
 				);
 			}
@@ -106,11 +104,9 @@ export default function Problems() {
 				if (opt) setPackages([response.data]);
 				else setPackages(response.data.deliveryProblems);
 				setPages(response.data.pages);
-			} else {
-				console.tron.log('------------------', response.status);
 			}
 		} catch (error) {
-			console.tron.log('@getSearchResults/handleSave Error', error);
+			console.tron.log('@Problems/getSearchResults Error', error);
 		}
 	}
 

@@ -9,7 +9,6 @@ import Paginator from '../../components/Paginator';
 import SearchBarC from '../../components/Search';
 import Modal from '../../components/Modal';
 import api from '../../services/api';
-
 import {
 	Container,
 	Header,
@@ -121,7 +120,6 @@ export default function Packages() {
 
 	function handlePaginate(p) {
 		setOffset(p);
-		console.tron.log('go to page', p);
 	}
 
 	async function handleCancelPackageButton(pack) {

@@ -6,7 +6,6 @@ import OptionsButtons from '../../components/OptionsButtons';
 import Paginator from '../../components/Paginator';
 import SearchBarC from '../../components/Search';
 import api from '../../services/api';
-
 import {
 	Container,
 	Header,
@@ -33,20 +32,19 @@ export default function DeliveryPerson() {
 					})
 					.catch((error) => {
 						console.tron.log(
-							'@Packages/loadDeliveryPerson ',
+							'@DeliveryPerson/loadDeliveryPerson ',
 							error.response.data.error
 						);
 						toast.error('Não foi possível buscar as encomendas.');
 					});
 
 				if (response.status === 200) {
-					console.log(response.data.deliveryPerson);
 					setDeliveryPeople(response.data.deliveryPerson);
 					setPages(response.data.pages);
 				}
 			} catch (error) {
 				console.tron.log(
-					'@DeliveryPersonEdition/handleSave Error',
+					'@DeliveryPerson/loadDeliveryPerson Error',
 					error
 				);
 			}
@@ -68,10 +66,6 @@ export default function DeliveryPerson() {
 		});
 	}
 
-	function handlePaginate(p) {
-		setOffset(p);
-	}
-
 	async function handleRemoveDeliveryPersonButton(selectedDeliveryPerson) {
 		// eslint-disable-next-line no-alert
 		const r = window.confirm('Remover o entregador?');
@@ -82,9 +76,9 @@ export default function DeliveryPerson() {
 						params: { id: selectedDeliveryPerson.id },
 					})
 					.catch((error) => {
-						toast.error('Não foi possível excluir o entragador.');
+						toast.error('Não foi possível excluir o entregador.');
 						console.tron.log(
-							'@Packages/handleRemoveDeliveryPersonButton Error',
+							'@DeliveryPerson/handleRemoveDeliveryPersonButton Error',
 							error
 						);
 					});
@@ -94,7 +88,7 @@ export default function DeliveryPerson() {
 				}
 			} catch (error) {
 				console.tron.log(
-					'@Packages/handleRemoveDeliveryPersonButton Error',
+					'@DeliveryPerson/handleRemoveDeliveryPersonButton Error',
 					error
 				);
 			}
@@ -117,10 +111,7 @@ export default function DeliveryPerson() {
 				setPages(response.data.pages);
 			}
 		} catch (error) {
-			console.tron.log(
-				'@getSelectPackagesOptions/handleSave Error',
-				error
-			);
+			console.tron.log('@DeliveryPerson/getSearchResults Error', error);
 		}
 	}
 
@@ -226,10 +217,7 @@ export default function DeliveryPerson() {
 				</Table>
 			)}
 			{pages > 0 && (
-				<Paginator
-					pages={pages}
-					onPaginate={(p) => handlePaginate(p)}
-				/>
+				<Paginator pages={pages} onPaginate={(p) => setOffset(p)} />
 			)}
 		</Container>
 	);

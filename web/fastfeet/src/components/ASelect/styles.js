@@ -5,8 +5,3 @@ export const Container = styled.div`
 	flex-direction: column;
 	width: 100%;
 `;
-
-export const Error = styled.span`
-	color: #f00;
-	margin-top: 8px;
-`;
