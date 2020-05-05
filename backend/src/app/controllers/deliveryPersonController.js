@@ -254,6 +254,41 @@ class DeliveryPersonController {
 			limit,
 		});
 	}
+
+	async signin(req, res) {
+		const schema = Yup.object().shape({
+			id: Yup.string(),
+		});
+		if (!(await schema.isValid(req.params))) {
+			return res.status(400).json({
+				error: 'offset and limit must be numbers.',
+			});
+		}
+
+		const deliveryPerson = await DeliveryPerson.findOne({
+			where: {
+				id: req.params.id,
+			},
+			attributes: ['id', 'name', 'email', 'avatar_id'],
+			include: [
+				{
+					model: File,
+					as: 'avatar',
+					attributes: ['name', 'path', 'url'],
+				},
+			],
+		});
+
+		if (!deliveryPerson) {
+			return res
+				.status(400)
+				.json({ error: 'Delivery person id not found.' });
+		}
+
+		return res.json({
+			deliveryPerson,
+		});
+	}
 }
 
 export default new DeliveryPersonController();

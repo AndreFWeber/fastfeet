@@ -1,19 +1,18 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, StatusBar } from 'react-native';
 import './config/ReactotronConfig';
+import {PersistGate} from 'redux-persist/integration/react';
+import {Provider} from 'react-redux';
+import {store, persistor} from './store';
+import App from './app';
 
-const App: () => React$Node = () => {
-    console.tron.log('fastfeet');
+const Index = () => {
     return (
-        <>
-            <StatusBar barStyle="dark-content" />
-            <SafeAreaView>
-                <ScrollView contentInsetAdjustmentBehavior="automatic">
-                    <Text>Fastfeet</Text>
-                </ScrollView>
-            </SafeAreaView>
-        </>
+        <Provider store={store}>
+            <PersistGate persistor={persistor}>
+                <App />
+            </PersistGate>
+        </Provider>
     );
 };
 
-export default App;
+export default Index;
