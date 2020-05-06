@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {setLoader} from '../../store/modules/app/actions';
 import api from '../../services/api';
-
+import PacksList from '../../components/PackList/List';
 import {
     Container,
     PageHeader,
@@ -18,21 +18,12 @@ import {
     MenuOptions,
     MenuOption,
     MenuOptionText,
-    PacksList,
-    Pack,
-    PackTitle,
-    PackHeader,
-    PackStatus,
-    Ball,
-    Line,
-    PackInfo,
 } from './styles';
 
 export default function Dashboard() {
     const [menuOption, setMenuOption] = useState('undelivered');
     const [packs, setPacks] = useState([]);
     const deliveryPerson = useSelector((state) => state.auth.deliveryPerson);
-    const loading = useSelector((state) => state.app.loading);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -108,30 +99,7 @@ export default function Dashboard() {
                     </MenuOption>
                 </MenuOptions>
             </PageMenu>
-            <PacksList
-                data={packs}
-                keyExtractor={(pack) => String(pack.id)}
-                renderItem={({item: pack}) => (
-                    <Pack>
-                        <PackHeader>
-                            <Icon
-                                name="local-shipping"
-                                size={20}
-                                color="#7157c1"
-                            />
-                            <PackTitle>{`Encomenda ${pack.id}`}</PackTitle>
-                        </PackHeader>
-                        <PackStatus>
-                            <Ball done />
-                            <Line />
-                            <Ball done={pack.start_date} />
-                            <Line />
-                            <Ball done={pack.end_date} />
-                        </PackStatus>
-                        <PackInfo />
-                    </Pack>
-                )}
-            />
+            {packs && <PacksList packs={packs} />}
         </Container>
     );
 }

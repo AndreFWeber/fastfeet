@@ -218,7 +218,7 @@ class DeliveryPersonController {
 			offset: (offset - 1) * limit,
 			attributes: [
 				'id',
-				'product',
+				'created_at',
 				'product',
 				'canceled_at',
 				'start_date',
