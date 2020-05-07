@@ -17,11 +17,37 @@ export const HeaderContent = styled.View`
     flex: 1;
 `;
 
+export const AvatarContainer = styled.View`
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    border: none;
+    color: rgb(150, 150, 150);
+    padding: 10px;
+`;
+
 export const Avatar = styled.Image`
     width: 80px;
     height: 80px;
     border-radius: 40px;
     margin-right: 15px;
+`;
+
+export const NameAvatar = styled.View`
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    height: 80px;
+    width: 80px;
+    border-radius: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    background: ${(props) => `rgba(${props.r},${props.g}, ${props.b}, 0.2)`};
+`;
+
+export const NameAvatarText = styled.Text`
+    font-size: 35px;
+    color: ${(props) => `rgba(${props.r},${props.g}, ${props.b}, 1)`};
 `;
 
 export const Welcome = styled.Text`

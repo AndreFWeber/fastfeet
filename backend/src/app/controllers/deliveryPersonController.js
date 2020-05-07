@@ -205,12 +205,14 @@ class DeliveryPersonController {
 		const deliveryPack = await DeliveryPacks.findAll({
 			where: delivered
 				? {
+						deliveryperson_id: values.id,
 						canceled_at: null,
 						end_date: {
 							[Op.ne]: null,
 						},
 				  }
 				: {
+						deliveryperson_id: values.id,
 						canceled_at: null,
 						end_date: null,
 				  },
