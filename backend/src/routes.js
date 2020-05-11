@@ -25,6 +25,8 @@ routes.get(
 routes.post('/deliverypackage/deliveries', DeliveryPacksController.status);
 // Report a problem
 routes.post('/deliverypackage/:id/problems', DeliveryProblemsController.store);
+// delyery person log in
+routes.get('/deliveryperson/:id', DeliveryPersonController.signin);
 
 routes.use(AuthConfig); // JWT token verifier
 

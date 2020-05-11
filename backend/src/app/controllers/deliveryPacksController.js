@@ -217,6 +217,7 @@ class DeliveryPackController {
 			offset: (offset - 1) * limit,
 			attributes: [
 				'id',
+				'created_at',
 				'product',
 				'product',
 				'canceled_at',
