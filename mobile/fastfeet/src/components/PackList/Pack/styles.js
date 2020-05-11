@@ -9,7 +9,6 @@ export const PackContainer = styled.View.attrs({
     shadowRadius: 2,
 })`
     background: #fff;
-    /* padding: 10px 20px; */
     margin: 0 0px 20px;
     border-width: 1px;
     border-radius: 4px;

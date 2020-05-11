@@ -2,11 +2,11 @@ import React, {useState, useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {setLoader} from '../../store/modules/app/actions';
 import {signOut} from '../../store/modules/auth/actions';
 import api from '../../services/api';
 import PacksList from '../../components/PackList/List';
+
 import {
     Container,
     PageHeader,
@@ -25,7 +25,7 @@ import {
     MenuOptionText,
 } from './styles';
 
-export default function Dashboard() {
+export default function Deliveries({navigation}) {
     const [menuOption, setMenuOption] = useState('undelivered');
     const [packs, setPacks] = useState([]);
     const [rgb, setRgb] = useState(['255', '255', '255', '255', '255', '255']);
@@ -59,7 +59,7 @@ export default function Dashboard() {
                     .catch((error) => {
                         dispatch(setLoader(false));
                         console.tron.log(
-                            '@Dashboard/loadPackages ',
+                            '@Deliveries/loadPackages ',
                             error.response.data.error
                         );
                         // toast.error('Não foi possível buscar as encomendas.');
@@ -70,7 +70,7 @@ export default function Dashboard() {
                 }
                 dispatch(setLoader(false));
             } catch (error) {
-                console.tron.log('@Dashboard/loadPackages Error', error);
+                console.tron.log('@Deliveries/loadPackages Error', error);
                 dispatch(setLoader(false));
             }
         }
@@ -134,14 +134,7 @@ export default function Dashboard() {
                     </MenuOption>
                 </MenuOptions>
             </PageMenu>
-            {packs && <PacksList packs={packs} />}
+            {packs && <PacksList packs={packs} navigation={navigation}/>}
         </Container>
     );
 }
-
-Dashboard.navigationOptions = {
-    tabBarLabel: 'Entregas',
-    tabBarIcon: ({tintColor}) => (
-        <FontAwesome5 name="box" size={20} color={tintColor} solid />
-    ),
-};

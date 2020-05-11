@@ -1,6 +1,5 @@
 import React, {useMemo} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 import {format, parseISO} from 'date-fns';
 
@@ -21,9 +20,7 @@ import {
     DetailText,
 } from './styles';
 
-const Pack = ({pack}) => {
-    const loading = useSelector((state) => state.app.loading);
-
+const Pack = ({pack, navigation}) => {
     const dateFormatted = useMemo(
         () => format(parseISO(pack.created_at), "dd'/'MM'/'yyyy"),
         [pack]
@@ -58,7 +55,10 @@ const Pack = ({pack}) => {
                     <InfoHeader>Cidade</InfoHeader>
                     <InfoValue>{pack.recipient.city}</InfoValue>
                 </Info>
-                <InfoDetails>
+                <InfoDetails
+                    onPress={() => {
+                        navigation.navigate('Detail', {pack});
+                    }}>
                     <DetailText>Ver Detalhes</DetailText>
                 </InfoDetails>
             </PackInfo>
