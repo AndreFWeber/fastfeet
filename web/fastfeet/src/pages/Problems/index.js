@@ -101,8 +101,8 @@ export default function Problems() {
 					}
 				});
 			if (response.status === 200) {
-				if (opt) setPackages([response.data]);
-				else setPackages(response.data.deliveryProblems);
+				console.log(' problemas  ', response.data);
+				setPackages(response.data.deliveryProblems);
 				setPages(response.data.pages);
 			}
 		} catch (error) {
@@ -149,9 +149,9 @@ export default function Problems() {
 									<Td>
 										<p>
 											#
-											{pack.id < 10
-												? `0${pack.id}`
-												: pack.id}
+											{pack.delivery_id < 10
+												? `0${pack.delivery_id}`
+												: pack.delivery_id}
 										</p>
 									</Td>
 									<Td>

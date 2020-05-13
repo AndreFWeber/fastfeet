@@ -1,5 +1,10 @@
 import styled from 'styled-components/native';
 
+export const Background = styled.SafeAreaView`
+    background-color: #fff;
+    height: 100%;
+`;
+
 export const Container = styled.SafeAreaView`
     margin-top: ${(props) => `${props.marginTop}px`};
     padding: 20px;
@@ -20,7 +25,7 @@ export const InfoContainer = styled.View.attrs({
     shadowRadius: 2,
 })`
     background: #fff;
-    margin: 0 0px 20px;
+    margin: 0 0px 10px;
     border-width: 1px;
     border-radius: 4px;
     border-color: #ddd;
@@ -54,3 +59,32 @@ export const Dates = styled.View`
 `;
 
 export const Date = styled.View``;
+
+export const Buttons = styled.View.attrs({
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+})`
+    background: #fff;
+    margin: 0 0px 20px;
+    border-width: 1px;
+    border-radius: 4px;
+    border-color: #ddd;
+
+    flex-direction: row;
+    align-items: center;
+    background-color: rgb(248, 249, 253);
+    padding: 20px 20px;
+`;
+
+export const InfoButtonText = styled.Text`
+    font-size: 14px;
+    color: rgb(101, 101, 101);
+    text-align: center;
+`;
+export const InfoButton = styled.TouchableOpacity`
+    flex: 1;
+    align-items: center;
+`;

@@ -23,21 +23,13 @@ class DeliveryProblemsController {
 			return res.status(400).json({ error: 'Package id not found.' });
 		}
 
-		const existingProblem = await DeliveryProblems.findOne({
-			where: { delivery_id: values.id },
-		});
-
 		const sqlizeBody = {
 			delivery_id: values.id,
 			description: values.description,
 		};
-		let sqlizeResp;
 
-		if (existingProblem) {
-			sqlizeResp = await existingProblem.update(sqlizeBody);
-		} else {
-			sqlizeResp = await DeliveryProblems.create(sqlizeBody);
-		}
+		const sqlizeResp = await DeliveryProblems.create(sqlizeBody);
+
 		return res.json({
 			id: sqlizeResp.id,
 			package_id: sqlizeResp.delivery_id,
@@ -76,7 +68,7 @@ class DeliveryProblemsController {
 		});
 	}
 
-	async indexOne(req, res) {
+	async indexById(req, res) {
 		const schema = Yup.object().shape({
 			id: Yup.number().required(),
 		});
@@ -86,17 +78,16 @@ class DeliveryProblemsController {
 			});
 		}
 
-		const found = await DeliveryProblems.findOne({
+		const deliveryProblems = await DeliveryProblems.findAll({
 			where: {
 				delivery_id: req.params.id,
 			},
-			attributes: ['id', 'delivery_id', 'description'],
+			attributes: ['id', 'delivery_id', 'description', 'created_at'],
 		});
-		if (!found) {
+		if (!deliveryProblems) {
 			return res.status(400).json({ error: 'Package id not found.' });
 		}
-		const { id, delivery_id, description } = found;
-		return res.json({ id, delivery_id, description });
+		return res.json({ deliveryProblems });
 	}
 
 	async delete(req, res) {

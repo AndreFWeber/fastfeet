@@ -1,8 +1,10 @@
-import React from 'react';
-import {Text, TouchableOpacity} from 'react-native';
+import React, {useMemo} from 'react';
+import {TouchableOpacity} from 'react-native';
+import {format, parseISO} from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useHeaderHeight} from 'react-navigation-stack';
 import {
+    Background,
     Container,
     TopBackground,
     InfoContainer,
@@ -12,14 +14,46 @@ import {
     InfoValue,
     Dates,
     Date,
+    Buttons,
+    InfoButton,
+    InfoButtonText,
 } from './styles';
 
 const Details = ({navigation}) => {
     const headerHeight = useHeaderHeight();
     const pack = navigation.getParam('pack');
-    console.tron.log('pack.recipient.city ', pack);
+
+    const dateFormatted = useMemo(() => {
+        let status = 'Pendente';
+        let startDate = '--/--/--';
+        let endDate = '--/--/--';
+
+        if (pack.start_date) {
+            status = 'Retirada';
+            startDate = format(parseISO(pack.start_date), "dd'/'MM'/'yyyy");
+        }
+        if (pack.end_date) {
+            status = 'Entregue';
+            endDate = format(parseISO(pack.end_date), "dd'/'MM'/'yyyy");
+        }
+
+        return {
+            status,
+            startDate,
+            endDate,
+        };
+    }, [pack]);
+
+    function handleNewProblem() {
+        navigation.navigate('Report', {pack});
+    }
+    function handleViewProblems() {
+        navigation.navigate('ViewProblems', {pack});
+    }
+    function handleDelivered() {}
+
     return (
-        <>
+        <Background>
             <TopBackground />
             <Container marginTop={Math.ceil(headerHeight)}>
                 <InfoContainer>
@@ -48,20 +82,46 @@ const Details = ({navigation}) => {
                         <InfoTitle>Situação da entrega</InfoTitle>
                     </TitleContainer>
                     <InfoHeader>Status</InfoHeader>
-                    <InfoValue>Ludivig</InfoValue>
+                    <InfoValue>{dateFormatted.status}</InfoValue>
                     <Dates>
                         <Date>
                             <InfoHeader>Data de retirada</InfoHeader>
-                            <InfoValue>Ludivig</InfoValue>
+                            <InfoValue>{dateFormatted.startDate}</InfoValue>
                         </Date>
                         <Date>
                             <InfoHeader>Data de entrega</InfoHeader>
-                            <InfoValue>Ludivig</InfoValue>
+                            <InfoValue>{dateFormatted.endDate}</InfoValue>
                         </Date>
                     </Dates>
                 </InfoContainer>
+                <Buttons>
+                    <InfoButton onPress={handleNewProblem}>
+                        <Icon
+                            name="rate-review"
+                            size={30}
+                            color="rgb(233, 66, 66)"
+                        />
+                        <InfoButtonText>Informar Problema</InfoButtonText>
+                    </InfoButton>
+                    <InfoButton onPress={handleViewProblems}>
+                        <Icon
+                            name="report"
+                            size={30}
+                            color="rgb(239, 192, 78)"
+                        />
+                        <InfoButtonText>Visualizar Problemas</InfoButtonText>
+                    </InfoButton>
+                    <InfoButton onPress={handleDelivered}>
+                        <Icon
+                            name="thumb-up"
+                            size={30}
+                            color="rgb(13, 161, 3)"
+                        />
+                        <InfoButtonText>Confirmar Entrega</InfoButtonText>
+                    </InfoButton>
+                </Buttons>
             </Container>
-        </>
+        </Background>
     );
 };
 

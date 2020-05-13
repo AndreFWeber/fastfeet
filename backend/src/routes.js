@@ -28,6 +28,11 @@ routes.post('/deliverypackage/:id/problems', DeliveryProblemsController.store);
 // delyery person log in
 routes.get('/deliveryperson/:id', DeliveryPersonController.signin);
 
+routes.get(
+	'/deliverypackage/:id/problems',
+	DeliveryProblemsController.indexById
+);
+
 routes.use(AuthConfig); // JWT token verifier
 
 routes.post('/user', UserController.store);
@@ -54,10 +59,6 @@ routes.put('/deliverypackage', DeliveryPacksController.update);
 routes.delete('/deliverypackage', DeliveryPacksController.delete);
 routes.get('/deliverypackage/problems', DeliveryProblemsController.index);
 
-routes.get(
-	'/deliverypackage/:id/problems',
-	DeliveryProblemsController.indexOne
-);
 routes.delete(
 	'/deliverypackage/:id/cancel-delivery',
 	DeliveryProblemsController.delete
