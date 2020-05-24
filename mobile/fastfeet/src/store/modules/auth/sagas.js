@@ -1,4 +1,3 @@
-import {Alert} from 'react-native';
 import {all, takeLatest, call, put} from 'redux-saga/effects';
 import api from '../../../services/api';
 import {signInSuccess, signInFailure} from './actions';
@@ -19,7 +18,6 @@ export function* signIn({payload}) {
 
         yield put(signInSuccess(deliveryPerson));
     } catch (error) {
-        Alert('Falha no login', 'Usuário não encontrado');
         yield put(signInFailure());
     }
 }

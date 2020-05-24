@@ -2,6 +2,8 @@ import React, {useMemo} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
 import {format, parseISO} from 'date-fns';
+import {useDispatch} from 'react-redux';
+import {PackageDetailed} from '../../../store/modules/packs/actions';
 
 import {
     PackContainer,
@@ -21,10 +23,16 @@ import {
 } from './styles';
 
 const Pack = ({pack, navigation}) => {
+    const dispatch = useDispatch();
     const dateFormatted = useMemo(
         () => format(parseISO(pack.created_at), "dd'/'MM'/'yyyy"),
         [pack]
     );
+
+    function showDetails() {
+        dispatch(PackageDetailed(pack));
+        navigation.navigate('Detail' /* {pack} */);
+    }
 
     return (
         <PackContainer>
@@ -55,10 +63,7 @@ const Pack = ({pack, navigation}) => {
                     <InfoHeader>Cidade</InfoHeader>
                     <InfoValue>{pack.recipient.city}</InfoValue>
                 </Info>
-                <InfoDetails
-                    onPress={() => {
-                        navigation.navigate('Detail', {pack});
-                    }}>
+                <InfoDetails onPress={showDetails}>
                     <DetailText>Ver Detalhes</DetailText>
                 </InfoDetails>
             </PackInfo>

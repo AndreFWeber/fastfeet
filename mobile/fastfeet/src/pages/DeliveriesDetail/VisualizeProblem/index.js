@@ -33,7 +33,7 @@ const VisualizeProblem = ({navigation}) => {
                     .get(`/deliverypackage/${pack.id}/problems`)
                     .catch((error) => {
                         console.tron.log(
-                            '@Deliveries/loadProblems ',
+                            '@VisualizeProblem/loadProblems ',
                             error.response.data.error
                         );
                         // toast.error('Não foi possível buscar as encomendas.');
@@ -43,11 +43,11 @@ const VisualizeProblem = ({navigation}) => {
                     setProblems(response.data.deliveryProblems);
                 }
             } catch (error) {
-                console.tron.log('@Deliveries/loadProblems Error', error);
+                console.tron.log('@VisualizeProblem/loadProblems Error', error);
             }
         }
         loadProblems();
-    }, [problems]);
+    }, []);
 
     return (
         <Background>

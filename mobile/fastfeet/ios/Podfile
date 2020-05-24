@@ -81,6 +81,8 @@ target 'fastfeet' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+
   target 'fastfeetTests' do
     inherit! :complete
     # Pods for testing

@@ -1,10 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
+import {useSelector} from 'react-redux';
 import {PacksList} from './styles';
+
 import Pack from '../Pack';
 
-function List({packs, navigation}) {
+function List({navigation}) {
+    const packs = useSelector((state) => state.packs.deliveryPacks);
     return (
         <PacksList
             data={packs}
@@ -18,6 +21,6 @@ function List({packs, navigation}) {
 
 export default List;
 
-List.propTypes = {
-    packs: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-};
+// List.propTypes = {
+//     packs: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+// };

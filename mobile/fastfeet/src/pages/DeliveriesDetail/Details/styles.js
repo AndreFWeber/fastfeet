@@ -58,7 +58,7 @@ export const Dates = styled.View`
     justify-content: space-between;
 `;
 
-export const Date = styled.View``;
+export const DateC = styled.View``;
 
 export const Buttons = styled.View.attrs({
     elevation: 1,

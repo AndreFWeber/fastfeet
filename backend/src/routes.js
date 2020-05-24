@@ -22,7 +22,7 @@ routes.get(
 	DeliveryPersonController.deliveries
 );
 // Start and End deliveries
-routes.post('/deliverypackage/deliveries', DeliveryPacksController.status);
+routes.put('/deliverypackage/deliveries', DeliveryPacksController.status);
 // Report a problem
 routes.post('/deliverypackage/:id/problems', DeliveryProblemsController.store);
 // delyery person log in
@@ -32,6 +32,7 @@ routes.get(
 	'/deliverypackage/:id/problems',
 	DeliveryProblemsController.indexById
 );
+routes.post('/files', upload.single('file'), FileController.store);
 
 routes.use(AuthConfig); // JWT token verifier
 
@@ -44,8 +45,6 @@ routes.post('/recipient', RecipientController.store);
 routes.put('/recipient', RecipientController.update);
 routes.get('/recipient', RecipientController.index);
 routes.delete('/recipient', RecipientController.delete);
-
-routes.post('/files', upload.single('file'), FileController.store);
 
 routes.post('/deliveryperson', DeliveryPersonController.store);
 routes.put('/deliveryperson', DeliveryPersonController.update);

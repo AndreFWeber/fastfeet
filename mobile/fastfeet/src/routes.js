@@ -9,6 +9,7 @@ import Perfil from './pages/Perfil/index';
 import DeliveriesDetail from './pages/DeliveriesDetail/Details';
 import ReportProblem from './pages/DeliveriesDetail/ReportProblem';
 import VisualizeProblem from './pages/DeliveriesDetail/VisualizeProblem';
+import ConfirmDelivery from './pages/DeliveriesDetail/ConfirmDelivery';
 
 const stack = {
     screen: createStackNavigator(
@@ -37,6 +38,7 @@ const stack = {
                     headerShown: true,
                 }),
             },
+            ConfirmDelivery,
         },
         {
             defaultNavigationOptions: {

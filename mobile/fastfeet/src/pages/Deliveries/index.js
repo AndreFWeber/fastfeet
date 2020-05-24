@@ -4,8 +4,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {setLoader} from '../../store/modules/app/actions';
 import {signOut} from '../../store/modules/auth/actions';
-import api from '../../services/api';
 import PacksList from '../../components/PackList/List';
+import {PackagesRequest} from '../../store/modules/packs/actions';
 
 import {
     Container,
@@ -30,6 +30,7 @@ export default function Deliveries({navigation}) {
     const [packs, setPacks] = useState([]);
     const [rgb, setRgb] = useState(['255', '255', '255', '255', '255', '255']);
     const deliveryPerson = useSelector((state) => state.auth.deliveryPerson);
+    const deliveryPacks = useSelector((state) => state.packs.deliveryPacks);
     const dispatch = useDispatch();
 
     function handleSignOut() {
@@ -48,34 +49,12 @@ export default function Deliveries({navigation}) {
     }, [deliveryPerson]);
 
     useEffect(() => {
-        async function loadPackages() {
-            try {
-                dispatch(setLoader(true));
+        setPacks(deliveryPacks);
+    }, [deliveryPacks]);
 
-                const response = await api
-                    .get(`deliveryperson/${deliveryPerson.id}/deliveries`, {
-                        params: {delivered: menuOption === 'delivered'},
-                    })
-                    .catch((error) => {
-                        dispatch(setLoader(false));
-                        console.tron.log(
-                            '@Deliveries/loadPackages ',
-                            error.response.data.error
-                        );
-                        // toast.error('Não foi possível buscar as encomendas.');
-                    });
-
-                if (response.status === 200) {
-                    setPacks(response.data.deliveryPack);
-                }
-                dispatch(setLoader(false));
-            } catch (error) {
-                console.tron.log('@Deliveries/loadPackages Error', error);
-                dispatch(setLoader(false));
-            }
-        }
+    useEffect(() => {
         setPacks([]);
-        loadPackages();
+        dispatch(PackagesRequest(1, menuOption === 'delivered'));
     }, [menuOption]);
 
     return (
@@ -134,7 +113,7 @@ export default function Deliveries({navigation}) {
                     </MenuOption>
                 </MenuOptions>
             </PageMenu>
-            {packs && <PacksList packs={packs} navigation={navigation}/>}
+            {packs && <PacksList navigation={navigation} />}
         </Container>
     );
 }

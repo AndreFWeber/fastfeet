@@ -176,7 +176,7 @@ class DeliveryPersonController {
 	async deliveries(req, res) {
 		const schema = Yup.object().shape({
 			id: Yup.number().required(),
-			delivered: Yup.boolean().required(),
+			delivered: Yup.boolean(),
 			offset: Yup.number().transform((originalValue) =>
 				originalValue <= 0 ? 1 : originalValue
 			),
@@ -191,9 +191,8 @@ class DeliveryPersonController {
 			});
 		}
 
-		const { offset = 1, limit = 20, delivered = false } = await schema.cast(
-			req.query
-		);
+		const { offset = 1, limit = 20 } = await schema.cast(req.query);
+		const { delivered } = req.query;
 
 		const deliveryPerson = await DeliveryPerson.findByPk(values.id);
 		if (!deliveryPerson) {
@@ -202,20 +201,11 @@ class DeliveryPersonController {
 				.json({ error: 'Delivery person id not found.' });
 		}
 
-		const deliveryPack = await DeliveryPacks.findAll({
-			where: delivered
-				? {
-						deliveryperson_id: values.id,
-						canceled_at: null,
-						end_date: {
-							[Op.ne]: null,
-						},
-				  }
-				: {
-						deliveryperson_id: values.id,
-						canceled_at: null,
-						end_date: null,
-				  },
+		const selectParams = {
+			where: {
+				deliveryperson_id: values.id,
+				canceled_at: null,
+			},
 			limit,
 			offset: (offset - 1) * limit,
 			attributes: [
@@ -248,7 +238,15 @@ class DeliveryPersonController {
 				},
 			],
 			order: ['id'],
-		});
+		};
+		if (delivered !== undefined) {
+			selectParams.where = {
+				...selectParams.where,
+				// delivered ? end_date not null : end_date: null
+				end_date: delivered === 'true' ? { [Op.ne]: null } : null,
+			};
+		}
+		const deliveryPack = await DeliveryPacks.findAll(selectParams);
 
 		return res.json({
 			deliveryPack,
