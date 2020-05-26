@@ -1,5 +1,4 @@
 import styled from 'styled-components/native';
-import Button from '../../../components/Button';
 
 export const Background = styled.SafeAreaView`
     background-color: #fff;
@@ -43,4 +42,19 @@ export const Date = styled.Text`
     padding-top: 5px;
     font-size: 14px;
     color: rgba(101, 101, 101, 0.4);
+`;
+
+export const NoData = styled.View`
+    position: relative;
+`;
+
+export const NoDataText = styled.Text`
+    align-self: flex-start;
+    padding-top: 15px;
+    font-size: 50px;
+    color: #000;
+`;
+
+export const John = styled.Image`
+    position: absolute;
 `;

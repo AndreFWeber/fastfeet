@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, {useState} from 'react';
 // import PropTypes from 'prop-types';
 import {useSelector} from 'react-redux';
 import {PacksList} from './styles';
@@ -8,9 +8,12 @@ import Pack from '../Pack';
 
 function List({navigation}) {
     const packs = useSelector((state) => state.packs.deliveryPacks);
+    const loading = useSelector((state) => state.packs.loading);
+    const [skeleton, setSkeleton] = useState([{id: 0}]);
+
     return (
         <PacksList
-            data={packs}
+            data={loading ? skeleton : packs}
             keyExtractor={(pack) => String(pack.id)}
             renderItem={({item: pack}) => (
                 <Pack pack={pack} navigation={navigation} />

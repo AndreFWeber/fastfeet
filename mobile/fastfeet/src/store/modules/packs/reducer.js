@@ -20,10 +20,15 @@ export default function packs(state = INITIAL_STATE, action) {
                 break;
             case '@packs/PACKAGES_DETAILED':
                 draft.deliveryDetailed = action.payload.deliveryPack;
-                // draft.loading = true;
                 break;
             case '@packs/PACKAGES_FAILURE':
                 draft.loading = false;
+                break;
+            case '@packs/PACKAGES_CLEAR':
+                draft.loading = false;
+                draft.delivered = false;
+                draft.deliveryDetailed = null;
+                draft.deliveryPacks = [];
                 break;
             default:
                 return state;

@@ -24,3 +24,9 @@ export function PackagesFailure() {
         type: '@packs/PACKAGES_FAILURE',
     };
 }
+
+export function PackagesClear() {
+    return {
+        type: '@packs/PACKAGES_CLEAR',
+    };
+}

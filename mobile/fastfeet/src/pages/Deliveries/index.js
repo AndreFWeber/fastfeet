@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {setLoader} from '../../store/modules/app/actions';
 import {signOut} from '../../store/modules/auth/actions';
 import PacksList from '../../components/PackList/List';
 import {PackagesRequest} from '../../store/modules/packs/actions';

@@ -18,6 +18,7 @@ export const PackContainer = styled.View.attrs({
 export const PackHeader = styled.View`
     flex-direction: row;
     padding: 10px 20px;
+    height: 40px;
 `;
 
 export const PackTitle = styled.Text`

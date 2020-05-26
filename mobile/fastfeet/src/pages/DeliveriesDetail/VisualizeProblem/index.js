@@ -1,9 +1,11 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useHeaderHeight} from 'react-navigation-stack';
 import {format, parseISO} from 'date-fns';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import api from '../../../services/api';
+import travolta from '../../../assets/travolta.png';
 
 import {
     Background,
@@ -12,12 +14,16 @@ import {
     ProblemContainer,
     Description,
     Date,
+    NoData,
+    NoDataText,
+    John,
 } from './styles';
 
 const VisualizeProblem = ({navigation}) => {
     const headerHeight = useHeaderHeight();
     const pack = navigation.getParam('pack');
     const [problems, setProblems] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useMemo(() => {
         const dates = problems.map((problem) => {
@@ -32,6 +38,7 @@ const VisualizeProblem = ({navigation}) => {
                 const response = await api
                     .get(`/deliverypackage/${pack.id}/problems`)
                     .catch((error) => {
+                        setLoading(false);
                         console.tron.log(
                             '@VisualizeProblem/loadProblems ',
                             error.response.data.error
@@ -40,9 +47,11 @@ const VisualizeProblem = ({navigation}) => {
                     });
 
                 if (response.status === 200) {
+                    setLoading(false);
                     setProblems(response.data.deliveryProblems);
                 }
             } catch (error) {
+                setLoading(false);
                 console.tron.log('@VisualizeProblem/loadProblems Error', error);
             }
         }
@@ -53,13 +62,35 @@ const VisualizeProblem = ({navigation}) => {
         <Background>
             <TopBackground />
             <Container marginTop={Math.ceil(headerHeight)}>
-                {problems &&
-                    problems.map((problem) => (
-                        <ProblemContainer key={problem.id}>
-                            <Description>{problem.description}</Description>
-                            <Date>{problem.date}</Date>
-                        </ProblemContainer>
-                    ))}
+                {loading && (
+                    <SkeletonPlaceholder>
+                        <View
+                            style={{
+                                width: '100%',
+                                height: 60,
+                                borderRadius: 4,
+                            }}
+                        />
+                    </SkeletonPlaceholder>
+                )}
+
+                {problems.length > 0
+                    ? problems.map((problem) => (
+                          <ProblemContainer key={problem.id}>
+                              <Description>{problem.description}</Description>
+                              <Date>{problem.date}</Date>
+                          </ProblemContainer>
+                      ))
+                    : !loading && (
+                          <>
+                              <NoData>
+                                  <NoDataText>Nenhum</NoDataText>
+                                  <NoDataText>problema</NoDataText>
+                                  <NoDataText>Aqui</NoDataText>
+                                  <John source={travolta} />
+                              </NoData>
+                          </>
+                      )}
             </Container>
         </Background>
     );
