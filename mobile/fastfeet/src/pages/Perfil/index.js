@@ -3,7 +3,7 @@ import {StatusBar, ScrollView} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {signOut} from '../../store/modules/auth/actions';
-
+import {PackagesClear} from '../../store/modules/packs/actions';
 import {
     Container,
     AvatarContainer,
@@ -19,7 +19,6 @@ import {
 export default function Perfil() {
     const deliveryPerson = useSelector((state) => state.auth.deliveryPerson);
     const dispatch = useDispatch();
-
     const [rgb, setRgb] = useState(['255', '255', '255', '255', '255', '255']);
 
     function handleRGB() {
@@ -32,12 +31,14 @@ export default function Perfil() {
             setRgb(rgbs);
         }
     }
+
     useEffect(() => {
         handleRGB();
     }, [deliveryPerson]);
 
     function handleSignOut() {
         dispatch(signOut());
+        dispatch(PackagesClear());
     }
 
     return (

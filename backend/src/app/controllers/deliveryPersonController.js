@@ -247,11 +247,15 @@ class DeliveryPersonController {
 			};
 		}
 		const deliveryPack = await DeliveryPacks.findAll(selectParams);
+		const count = await DeliveryPacks.count({
+			where: selectParams.where
+		});
 
 		return res.json({
 			deliveryPack,
 			offset,
 			limit,
+			pages: Math.ceil(count/ limit),
 		});
 	}
 

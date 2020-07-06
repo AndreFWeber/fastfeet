@@ -1,11 +1,10 @@
 import {all, takeLatest, call, put} from 'redux-saga/effects';
+import {ToastAndroid, Platform, AlertIOS} from 'react-native';
 import api from '../../../services/api';
 import {signInSuccess, signInFailure} from './actions';
-// import history from '../../../services/history';
 
 export function* signIn({payload}) {
     const {id} = payload;
-
     try {
         const response = yield call(api.get, `deliveryperson/${id}`);
 
@@ -18,6 +17,17 @@ export function* signIn({payload}) {
 
         yield put(signInSuccess(deliveryPerson));
     } catch (error) {
+        const msg = 'Não foi possível logar.';
+        if (Platform.OS === 'android') {
+            ToastAndroid.showWithGravity(
+                msg,
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER
+            );
+        } else {
+            AlertIOS.alert(msg);
+        }
+
         yield put(signInFailure());
     }
 }

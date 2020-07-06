@@ -1,7 +1,7 @@
 import {all, takeLatest, call, put} from 'redux-saga/effects';
+import {ToastAndroid, Platform, AlertIOS} from 'react-native';
 import api from '../../../services/api';
 import {PackagesSuccess, PackagesFailure} from './actions';
-// import history from '../../../services/history';
 
 export function* Packages({payload}) {
     const {id, delivered} = payload;
@@ -10,12 +10,25 @@ export function* Packages({payload}) {
         const response = yield call(
             api.get,
             `deliveryperson/${id}/deliveries`,
-            {params: {delivered}}
+            {params: {delivered, limit: payload.limit, offset: payload.offset}}
         );
-
-        const {deliveryPack} = response.data;
-        yield put(PackagesSuccess(deliveryPack, delivered));
+        
+        const {deliveryPack, offset, limit, pages} = response.data;
+        yield put(
+            PackagesSuccess(deliveryPack, delivered, limit, offset, pages)
+        );
     } catch (error) {
+        const msg = 'Erro ao buscar as entregas.';
+        if (Platform.OS === 'android') {
+            ToastAndroid.showWithGravity(
+                msg,
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER
+            );
+        } else {
+            AlertIOS.alert(msg);
+        }
+
         yield put(PackagesFailure());
     }
 }

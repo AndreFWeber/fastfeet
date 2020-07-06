@@ -91,9 +91,6 @@ const ConfirmDelivery = ({navigation}) => {
                 if (confirmResponse.status === 200) {
                     dispatch(PackagesRequest(1, false));
                     dispatch(PackageDetailed(confirmResponse.data.updatedPack));
-                    // navigation.navigate('Detail', {
-                    //     pack: confirmResponse.data.updatedPack,
-                    // });
                     navigation.goBack();
                 }
             }

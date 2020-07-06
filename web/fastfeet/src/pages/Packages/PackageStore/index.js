@@ -22,12 +22,21 @@ const colourStyles = {
 		height: '44px',
 		fontWeight: '100',
 	}),
+	valueContainer: (styles) => ({
+		height: '44px',
+	}),
 	input: (styles) => ({
 		...styles,
+		height: '44px',
+		display: 'flex',
+		alignItems: 'center',
+		padding: '0',
+		margin: '0px 15px',
 		color: 'rgb(150, 150, 150)',
 	}),
 	placeholder: (styles) => ({
 		...styles,
+		margin: '0px 15px',
 		color: 'rgb(150, 150, 150)',
 	}),
 	singleValue: (styles) => ({
@@ -65,7 +74,7 @@ export default function PackageStore({ location }) {
 					...pack,
 				})
 				.catch((error) => {
-					toast.error('Não foi possível cadastrar o usuário.');
+					toast.error('Não foi possível cadastrar a encomenda.');
 					console.tron.log('@PackageStore/handleSave Error', error);
 				});
 			if (response.status === 200) {
@@ -89,7 +98,7 @@ export default function PackageStore({ location }) {
 			const response = await api
 				.put('/deliverypackage', data)
 				.catch((error) => {
-					toast.error('Não foi possível editar o usuário.');
+					toast.error('Não foi possível editar a encomenda');
 					console.tron.log('@PackageStore/handleUpdate Error', error);
 				});
 			if (response.status === 200) {

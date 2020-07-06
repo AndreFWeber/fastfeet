@@ -73,7 +73,6 @@ const VisualizeProblem = ({navigation}) => {
                         />
                     </SkeletonPlaceholder>
                 )}
-
                 {problems.length > 0
                     ? problems.map((problem) => (
                           <ProblemContainer key={problem.id}>

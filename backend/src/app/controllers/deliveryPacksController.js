@@ -458,7 +458,7 @@ class DeliveryPackController {
 				'00'
 			);
 			const beforeDate = afterDate;
-			beforeDate.setHours('24'); /*! FIXME */
+			beforeDate.setHours('18');
 			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
 				return res.status(400).json({
 					error:
@@ -474,7 +474,7 @@ class DeliveryPackController {
 					},
 				},
 			});
-			if (collectedPackages >= 500) {
+			if (collectedPackages >= 5) {
 				return res.status(400).json({
 					error:
 						'A delivery person may take out at most 5 packages a day.',

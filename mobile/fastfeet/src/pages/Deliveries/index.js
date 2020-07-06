@@ -1,11 +1,11 @@
+/* eslint-disable no-plusplus */
 import React, {useState, useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {signOut} from '../../store/modules/auth/actions';
 import PacksList from '../../components/PackList/List';
-import {PackagesRequest} from '../../store/modules/packs/actions';
-
+import {PackagesClear} from '../../store/modules/packs/actions';
 import {
     Container,
     PageHeader,
@@ -26,14 +26,13 @@ import {
 
 export default function Deliveries({navigation}) {
     const [menuOption, setMenuOption] = useState('undelivered');
-    const [packs, setPacks] = useState([]);
     const [rgb, setRgb] = useState(['255', '255', '255', '255', '255', '255']);
     const deliveryPerson = useSelector((state) => state.auth.deliveryPerson);
-    const deliveryPacks = useSelector((state) => state.packs.deliveryPacks);
-    const dispatch = useDispatch();
 
+    const dispatch = useDispatch();
     function handleSignOut() {
         dispatch(signOut());
+        dispatch(PackagesClear());
     }
 
     useEffect(() => {
@@ -46,15 +45,6 @@ export default function Deliveries({navigation}) {
             setRgb(rgbs);
         }
     }, [deliveryPerson]);
-
-    useEffect(() => {
-        setPacks(deliveryPacks);
-    }, [deliveryPacks]);
-
-    useEffect(() => {
-        setPacks([]);
-        dispatch(PackagesRequest(1, menuOption === 'delivered'));
-    }, [menuOption]);
 
     return (
         <Container>
@@ -112,7 +102,7 @@ export default function Deliveries({navigation}) {
                     </MenuOption>
                 </MenuOptions>
             </PageMenu>
-            {packs && <PacksList navigation={navigation} />}
+            <PacksList navigation={navigation} delivered={menuOption} />
         </Container>
     );
 }

@@ -52,7 +52,7 @@ export default function DeliveryPersonEdition({ location }) {
 				toast.success('Usuário cadastrado com sucesso.');
 			}
 		} catch (error) {
-			console.tron.log('@DeliveryPersonEdition/handleSave Error', error);
+			console.tron.log('@DeliveryPersonEdition/handleSave ddddddddError', error);
 		}
 	}
 
