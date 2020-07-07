@@ -30,6 +30,7 @@ const ConfirmDelivery = ({navigation}) => {
     const headerHeight = useHeaderHeight();
     const pack = navigation.getParam('pack');
     const deliveryPerson = useSelector((state) => state.auth.deliveryPerson);
+    const limit = useSelector((state) => state.packs.limit);
     const camRef = useRef(null);
     const dispatch = useDispatch();
 
@@ -58,7 +59,7 @@ const ConfirmDelivery = ({navigation}) => {
             setCamFlashMode('on');
         }
     }
-    console.tron.log(pack);
+
     async function handleSend() {
         console.tron.log(preview.uri);
         const data = new FormData();
@@ -89,7 +90,8 @@ const ConfirmDelivery = ({navigation}) => {
                         );
                     });
                 if (confirmResponse.status === 200) {
-                    dispatch(PackagesRequest(1, false));
+                    // dispatch(PackagesRequest(1, false));
+                    dispatch(PackagesRequest(1, false, limit, 1, true));
                     dispatch(PackageDetailed(confirmResponse.data.updatedPack));
                     navigation.goBack();
                 }

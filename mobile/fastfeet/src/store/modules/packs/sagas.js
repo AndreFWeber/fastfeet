@@ -14,8 +14,9 @@ export function* Packages({payload}) {
         );
         
         const {deliveryPack, offset, limit, pages} = response.data;
+
         yield put(
-            PackagesSuccess(deliveryPack, delivered, limit, offset, pages)
+            PackagesSuccess(deliveryPack, delivered, limit, offset, pages, payload.forceRefresh)
         );
     } catch (error) {
         const msg = 'Erro ao buscar as entregas.';

@@ -92,13 +92,13 @@ class DeliveryPackController {
 				today.getFullYear(),
 				today.getMonth(),
 				today.getDate(),
-				'00',
+				'08',
 				'00',
 				'00',
 				'00'
 			);
 			const beforeDate = afterDate;
-			beforeDate.setHours('23'); /* !FIXME  */
+			beforeDate.setHours('18');
 			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
 				return res.status(400).json({
 					error:

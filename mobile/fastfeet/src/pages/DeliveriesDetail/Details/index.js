@@ -1,9 +1,10 @@
-import React, {useMemo, useState, useEffect} from 'react';
-import {TouchableOpacity, ScrollView} from 'react-native';
-import {format, parseISO} from 'date-fns';
+import React, { useMemo, useState } from 'react';
+import { TouchableOpacity, ScrollView } from 'react-native';
+import { format, parseISO } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useHeaderHeight} from 'react-navigation-stack';
-import {useDispatch, useSelector} from 'react-redux';
+import { useHeaderHeight } from 'react-navigation-stack';
+import { useDispatch, useSelector } from 'react-redux';
+import Toaster from '../../../components/Toaster';
 import {
     PackagesRequest,
     PackageDetailed,
@@ -26,10 +27,13 @@ import {
     InfoButtonText,
 } from './styles';
 
-const Details = ({navigation}) => {
+const Details = ({ navigation }) => {
     const headerHeight = useHeaderHeight();
     const pack = useSelector((state) => state.packs.deliveryDetailed);
+    const limit = useSelector((state) => state.packs.limit);
     const deliveryPerson = useSelector((state) => state.auth.deliveryPerson);
+    const [showErrorToast, setShowErrorToast] = useState(false);
+    const [messageToast, setMessageToast] = useState("");
     const dispatch = useDispatch();
 
     const dateFormatted = useMemo(() => {
@@ -54,15 +58,16 @@ const Details = ({navigation}) => {
     }, [pack]);
 
     function handleNewProblem() {
-        navigation.navigate('Report', {pack});
+        navigation.navigate('Report', { pack });
     }
     function handleViewProblems() {
-        navigation.navigate('ViewProblems', {pack});
+        navigation.navigate('ViewProblems', { pack });
     }
 
     async function handleDeliveryStatus() {
         if (dateFormatted.status === 'Pendente') {
             const date = new Date().toISOString();
+
             const confirmResponse = await api
                 .put('deliverypackage/deliveries', {
                     package_id: pack.id,
@@ -70,23 +75,43 @@ const Details = ({navigation}) => {
                     start_date: date,
                 })
                 .catch((error) => {
-                    console.tron.log(
-                        '@ConfirmDelivery/handleSend Error',
-                        error
-                    );
+                    try {
+                        if ("Package collection must occur between 08:00 and 18:00h." === error.response.data.error) {
+                            setShowErrorToast(true); 
+                            setMessageToast("Coleta de pacotes só é permitida entre as 08:00h e 18:00h");
+                        } else if ("A delivery person may take out at most 5 packages a day." === error.response.data.error) {
+                            setShowErrorToast(true); 
+                            setMessageToast("Um entregador pode retirar no máximo 5 entragas por dia.");
+                        }
+                        console.tron.log(
+                            '@ConfirmDelivery/handleDeliveryStatus Error',
+                            error.response.data.error
+                        );
+                    } catch (error) {
+                        console.tron.log(
+                            '@ConfirmDelivery/handleDeliveryStatus Error',
+                            error
+                        );
+                    }
                 });
-            if (confirmResponse.status === 200) {
-                dispatch(PackagesRequest(1, false));
+            if (confirmResponse && confirmResponse.status === 200) {
+                dispatch(PackagesRequest(1, false, limit, 1, true));
                 dispatch(PackageDetailed(confirmResponse.data.updatedPack));
                 console.tron.log(confirmResponse.data);
             }
         } else {
-            navigation.navigate('ConfirmDelivery', {pack});
+            navigation.navigate('ConfirmDelivery', { pack });
         }
     }
 
     return (
         <Background>
+            <Toaster
+                message={messageToast}
+                visible={showErrorToast}
+                backgroundColor="red"
+                onHidden={() => {setShowErrorToast(false);}}
+            />
             <TopBackground />
             <Container marginTop={Math.ceil(headerHeight)}>
                 <ScrollView>
@@ -110,13 +135,13 @@ const Details = ({navigation}) => {
                                 <InfoHeader>Endereço de entrega</InfoHeader>
                                 <InfoValue>{`${pack.recipient.street}, ${
                                     pack.recipient.number
-                                }, ${
+                                    }, ${
                                     pack.recipient.complement
                                         ? `${pack.recipient.complement}, `
                                         : ''
-                                }${pack.recipient.city}-${
+                                    }${pack.recipient.city}-${
                                     pack.recipient.state
-                                }, ${pack.recipient.postcode}`}</InfoValue>
+                                    }, ${pack.recipient.postcode}`}</InfoValue>
                                 <InfoHeader>Produto</InfoHeader>
                                 <InfoValue>{pack.product}</InfoValue>
                             </InfoContainer>
@@ -174,7 +199,7 @@ const Details = ({navigation}) => {
                                         <Icon
                                             name={
                                                 dateFormatted.status ===
-                                                'Pendente'
+                                                    'Pendente'
                                                     ? 'work'
                                                     : 'thumb-up'
                                             }
@@ -197,7 +222,7 @@ const Details = ({navigation}) => {
     );
 };
 
-Details.navigationOptions = ({navigation}) => ({
+Details.navigationOptions = ({ navigation }) => ({
     title: 'Detalhes da encomenda',
     headerTitleAlign: 'center',
     headerLeft: () => (

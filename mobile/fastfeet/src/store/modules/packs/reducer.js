@@ -17,7 +17,7 @@ export default function packs(state = INITIAL_STATE, action) {
                 draft.loading = true;
                 break;
             case '@packs/PACKAGES_SUCCESS':
-                draft.deliveryPacks = state.delivered === action.payload.delivered ? [...state.deliveryPacks , ...action.payload.deliveryPacks] : [...action.payload.deliveryPacks];
+                draft.deliveryPacks = state.delivered === action.payload.delivered && !action.payload.forceRefresh ? [...state.deliveryPacks , ...action.payload.deliveryPacks] : [...action.payload.deliveryPacks];
                 draft.delivered = action.payload.delivered;
                 draft.offset = action.payload.offset;
                 draft.limit = action.payload.limit;
