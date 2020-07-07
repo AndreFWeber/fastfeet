@@ -1,12 +1,11 @@
+/* eslint-disable no-plusplus */
 import React, {useState, useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {setLoader} from '../../store/modules/app/actions';
 import {signOut} from '../../store/modules/auth/actions';
-import api from '../../services/api';
 import PacksList from '../../components/PackList/List';
-
+import {PackagesClear} from '../../store/modules/packs/actions';
 import {
     Container,
     PageHeader,
@@ -27,13 +26,13 @@ import {
 
 export default function Deliveries({navigation}) {
     const [menuOption, setMenuOption] = useState('undelivered');
-    const [packs, setPacks] = useState([]);
     const [rgb, setRgb] = useState(['255', '255', '255', '255', '255', '255']);
     const deliveryPerson = useSelector((state) => state.auth.deliveryPerson);
-    const dispatch = useDispatch();
 
+    const dispatch = useDispatch();
     function handleSignOut() {
         dispatch(signOut());
+        dispatch(PackagesClear());
     }
 
     useEffect(() => {
@@ -46,37 +45,6 @@ export default function Deliveries({navigation}) {
             setRgb(rgbs);
         }
     }, [deliveryPerson]);
-
-    useEffect(() => {
-        async function loadPackages() {
-            try {
-                dispatch(setLoader(true));
-
-                const response = await api
-                    .get(`deliveryperson/${deliveryPerson.id}/deliveries`, {
-                        params: {delivered: menuOption === 'delivered'},
-                    })
-                    .catch((error) => {
-                        dispatch(setLoader(false));
-                        console.tron.log(
-                            '@Deliveries/loadPackages ',
-                            error.response.data.error
-                        );
-                        // toast.error('Não foi possível buscar as encomendas.');
-                    });
-
-                if (response.status === 200) {
-                    setPacks(response.data.deliveryPack);
-                }
-                dispatch(setLoader(false));
-            } catch (error) {
-                console.tron.log('@Deliveries/loadPackages Error', error);
-                dispatch(setLoader(false));
-            }
-        }
-        setPacks([]);
-        loadPackages();
-    }, [menuOption]);
 
     return (
         <Container>
@@ -134,7 +102,7 @@ export default function Deliveries({navigation}) {
                     </MenuOption>
                 </MenuOptions>
             </PageMenu>
-            {packs && <PacksList packs={packs} navigation={navigation}/>}
+            <PacksList navigation={navigation} delivered={menuOption} />
         </Container>
     );
 }

@@ -92,13 +92,13 @@ class DeliveryPackController {
 				today.getFullYear(),
 				today.getMonth(),
 				today.getDate(),
-				'00',
+				'08',
 				'00',
 				'00',
 				'00'
 			);
 			const beforeDate = afterDate;
-			beforeDate.setHours('23'); /* !FIXME  */
+			beforeDate.setHours('18');
 			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
 				return res.status(400).json({
 					error:
@@ -385,8 +385,53 @@ class DeliveryPackController {
 			end_date: endDate,
 		} = req.body;
 		let collectedPackages = 0;
-
-		const pack = await DeliveryPacks.findByPk(packageId);
+		const pack = await DeliveryPacks.findOne({
+			where: {
+				id: packageId,
+			},
+			attributes: [
+				'id',
+				'created_at',
+				'product',
+				'product',
+				'canceled_at',
+				'start_date',
+				'end_date',
+			],
+			include: [
+				{
+					model: File,
+					as: 'signature',
+					attributes: ['name', 'path', 'url'],
+				},
+				{
+					model: DeliveryPerson,
+					as: 'deliveryperson',
+					attributes: ['id', 'name', 'email'],
+					include: [
+						{
+							model: File,
+							as: 'avatar',
+							attributes: ['id', 'path', 'url'],
+						},
+					],
+				},
+				{
+					model: Recipients,
+					as: 'recipient',
+					attributes: [
+						'id',
+						'recipient',
+						'street',
+						'number',
+						'complement',
+						'state',
+						'city',
+						'postcode',
+					],
+				},
+			],
+		});
 		if (!pack) {
 			return res.status(400).json({ error: 'Package id not found.' });
 		}
@@ -395,7 +440,6 @@ class DeliveryPackController {
 				error: 'Package has been canceled.',
 			});
 		}
-
 		if (startDate) {
 			if (pack.start_date) {
 				return res.status(400).json({
@@ -414,7 +458,7 @@ class DeliveryPackController {
 				'00'
 			);
 			const beforeDate = afterDate;
-			beforeDate.setHours('23'); /*! FIXME */
+			beforeDate.setHours('18');
 			if (!(isAfter(afterDate, today) && isBefore(today, beforeDate))) {
 				return res.status(400).json({
 					error:
@@ -437,7 +481,6 @@ class DeliveryPackController {
 				});
 			}
 		}
-
 		if (deliverypersonId) {
 			const deliveryPerson = await DeliveryPerson.findByPk(
 				deliverypersonId
@@ -448,7 +491,6 @@ class DeliveryPackController {
 					.json({ error: 'Delivery person id not found.' });
 			}
 		}
-
 		if (endDate) {
 			if (pack.end_date) {
 				return res.status(400).json({
@@ -473,7 +515,6 @@ class DeliveryPackController {
 				});
 			}
 		}
-
 		if (signatureId) {
 			const signature = await File.findByPk(signatureId);
 			if (!signature) {
@@ -482,27 +523,9 @@ class DeliveryPackController {
 					.json({ error: 'Signature id not found.' });
 			}
 		}
-
-		const {
-			id,
-			product,
-			recipient_id,
-			deliveryperson_id,
-			signature_id,
-			canceled_at,
-			start_date,
-			end_date,
-		} = await pack.update(values);
-
+		const updatedPack = await pack.update(values);
 		return res.json({
-			id,
-			product,
-			recipient_id,
-			deliveryperson_id,
-			signature_id,
-			canceled_at,
-			start_date,
-			end_date,
+			updatedPack,
 			collectedPackages: collectedPackages + 1,
 		});
 	}

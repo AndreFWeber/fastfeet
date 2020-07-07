@@ -3,14 +3,14 @@ import {BorderlessButton} from 'react-native-gesture-handler';
 
 export const Container = styled.SafeAreaView`
     flex: 1;
-    padding: 25px;
+    padding: 5px 25px;
 `;
 
 export const PageHeader = styled.View`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 5px;
 `;
 
 export const HeaderContent = styled.View`
@@ -28,8 +28,8 @@ export const AvatarContainer = styled.View`
 `;
 
 export const Avatar = styled.Image`
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 40px;
     margin-right: 15px;
 `;
@@ -38,8 +38,8 @@ export const NameAvatar = styled.View`
     align-items: center;
     justify-content: center;
     margin-right: 5px;
-    height: 80px;
-    width: 80px;
+    height: 65px;
+    width: 65px;
     border-radius: 40px;
     border: 3px solid rgba(255, 255, 255, 0.3);
     background: ${(props) => `rgba(${props.r},${props.g}, ${props.b}, 0.2)`};

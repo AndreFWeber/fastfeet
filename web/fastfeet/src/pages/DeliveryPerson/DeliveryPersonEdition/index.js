@@ -52,6 +52,7 @@ export default function DeliveryPersonEdition({ location }) {
 				toast.success('Usuário cadastrado com sucesso.');
 			}
 		} catch (error) {
+			toast.error('Não foi possível cadastrar o usuário. Verifique sua conexão.');
 			console.tron.log('@DeliveryPersonEdition/handleSave Error', error);
 		}
 	}
@@ -87,6 +88,7 @@ export default function DeliveryPersonEdition({ location }) {
 				toast.success('Usuário atualizado com sucesso.');
 			}
 		} catch (error) {
+			toast.error('Não foi possível editar o usuário. Verifique sua conexão.');
 			console.tron.log(
 				'@DeliveryPersonEdition/handleUpdate Error',
 				error
