@@ -14,7 +14,7 @@ const Toaster = (
             opacity={1}
             shadow
             animation
-            hideOnPress={()=>{console.tron.log("Teste")}}
+            hideOnPress={true}
             delay={0}
             onHidden={onHidden}>
             {message}

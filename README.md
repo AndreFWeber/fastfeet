@@ -42,16 +42,23 @@ $git clone https://github.com/AndreFWeber/fastfeet.git
 $cd fastfeet/backend
 
 #Container do Redis
-$sudo docker run --name redisFastfeet -p 6379:6379 -d -t redis:alpine
+$docker run --name redisFastfeet -p 6379:6379 -d -t redis:alpine
 
 #Container do Postgres
 $docker run --name fastfeet -e POSTGRES_PASSWORD=fastfeet -p 5432:5432 -d postgres
 
 #É necessário criar a database do fastfeet no postgres
+#Abre um terminal para o container
+$docker exec -it fastfeet bash
+
+#Dentro do terminal do container:
 $psql -U postgres
-create database fastfeet;
-exit
-exit
+
+#Cria a base de dados fastfeet:
+$create database fastfeet;
+
+$exit
+$exit
 
 $yarn install
 
@@ -134,7 +141,7 @@ $react-native run-android
 $yarn start
 
 #Para debug via reactotron
-adb reverse tcp:9090 tcp:9090
+$adb reverse tcp:9090 tcp:9090
 ```
 
 ![](https://github.com/AndreFWeber/fastfeet/blob/master/mobile/docs/mobileDemo.gif)
