@@ -77,7 +77,7 @@ $yarn dev
   O front end do projeto foi inteiramente desenvolvido em react js, utilizando os recursos mais atualizados disponiveis para o framework, como hooks além do uso de bibliotecas como Axios, Yup dentre outras. Por fim, é utilizada redux e redux-saga para tirar proveito de todo o poder da arquitetura flux. O resultado pode ser visto abaixo:
 </p>
 
-![]("https://github.com/AndreFWeber/fastfeet/blob/master/web/docs/webDemo.gif")
+![](https://github.com/AndreFWeber/fastfeet/blob/master/web/docs/webDemo.gif)
 
 </br>
 <p>
